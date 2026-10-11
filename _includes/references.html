@@ -1,0 +1,6 @@
+<h2 id="references">References</h2>
+<ol class="references">
+{% for id in page.references %}{% assign ref = site.data.references | where: 'id', id | first %}
+  <li id="{{ id | downcase }}">[{{ id }}] {{ ref.author }}. <a href="{{ ref.url }}">{{ ref.title }}</a>. {{ ref.year }}. {{ ref.note }}</li>
+{% endfor %}
+</ol>

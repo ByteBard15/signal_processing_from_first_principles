@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'en' }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#102a43">
+    {% seo %}
+    <link rel="canonical" href="{{ page.url | absolute_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+    <script>document.documentElement.classList.add('js');</script>
+    <script defer src="{{ '/assets/js/site.js' | relative_url }}"></script>
+    <script>
+      window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    {% include header.html %}
+    {{ content }}
+    {% include footer.html %}
+  </body>
+</html>

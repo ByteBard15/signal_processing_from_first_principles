@@ -1,0 +1,10 @@
+export const complex = (re = 0, im = 0) => ({ re, im });
+export const add = (a, b) => complex(a.re + b.re, a.im + b.im);
+export const subtract = (a, b) => complex(a.re - b.re, a.im - b.im);
+export const multiply = (a, b) => complex(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
+export const conjugate = (a) => complex(a.re, -a.im);
+export const magnitude = (a) => Math.hypot(a.re, a.im);
+export const phase = (a) => Math.atan2(a.im, a.re);
+export const exp = (theta) => complex(Math.cos(theta), Math.sin(theta));
+export const asComplex = (a) => typeof a === 'number' ? complex(a) : complex(a.re, a.im);
+export const format = (a) => `${a.re.toFixed(3)} ${a.im < 0 ? '−' : '+'} j${Math.abs(a.im).toFixed(3)}`;

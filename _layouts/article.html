@@ -1,0 +1,18 @@
+---
+layout: default
+---
+<div class="page-shell page-shell--article">
+  <main id="content" class="article">
+    {% include breadcrumbs.html %}
+    <header class="article-header">
+      <p class="eyebrow">{{ page.series }} · Article {{ page.article_number }}</p>
+      <h1>{{ page.title }}</h1>
+      <p class="lede">{{ page.description }}</p>
+      <p class="article-meta">Updated <time datetime="{{ page.updated | date: '%Y-%m-%d' }}">{{ page.updated | date: '%B %d, %Y' }}</time> · {{ page.reading_time }} min reading, plus experiments</p>
+    </header>
+    {% if page.toc != false %}<details class="toc"><summary>On this page</summary><nav id="toc" aria-label="Table of contents"></nav></details>{% endif %}
+    <div class="prose">{{ content }}</div>
+    {% include article-nav.html %}
+  </main>
+</div>
+{% if page.interactive %}<script type="module" src="{{ '/assets/js/signal-processing/boot.mjs' | relative_url }}"></script>{% endif %}

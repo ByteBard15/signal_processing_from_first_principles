@@ -1,0 +1,93 @@
+# Signal Processing from First Principles
+
+## Reference and layers
+
+Adapted from the author's oscilloscope research site, commit `1d6de2d`:
+Jekyll/GFM, Liquid includes, MathJax 3, Georgia headings, system prose,
+CSS tokens, vanilla JavaScript and Canvas. No plotting or UI dependencies.
+The reference checkout in `tmp/oscilloscope-reference` is not site content.
+
+- Prose/metadata: `content/signal-processing/<article>/index.md`.
+- Math: `assets/js/signal-processing/{math,signals,transforms,sampling,windows,filters,spectral}`.
+- UI: `shared`, `fourier`, `digital` under the same JS root.
+- Reproducible defaults/fixtures: `data/signal-processing` (browser imports).
+- References: `_data/references.yml`, rendered at each article's end.
+- Tests: `node --test tests/signal-processing/*.test.mjs`.
+
+The JS files are native ES modules (`.mjs`) so Node and browsers share exactly
+the same algorithms without a bundler. Jekyll copies these as static assets.
+
+## Outlines reviewed before implementation
+
+**Article 1:** composition → functions as vectors/probe → orthogonality-derived
+trigonometric series → harmonic reconstruction → pointwise versus energy
+convergence → Gibbs → conjugate rotations/complex series → Parseval → periodic
+pulse with growing T/Riemann-sum transform limit → rectangle/Gaussian and shifts
+→ necessary transform properties → unresolved sampling question.
+
+**Article 2:** impulse-train multiplication/replicas → aliasing/overlap → sinc
+reconstruction → periodic DTFT → unit-circle aside → weighted sums/convolution
+→ frequency multiplication → finite basis/DFT → periodic extension → bin spacing
+→ leakage/windows → even/odd FFT/butterflies → direct comparison → practical
+two-tone analysis → periodogram/Welch → nonstationary STFT.
+
+No Laplace/Z derivations, general LTI/control chapters, or standalone convolution
+treatment. Convolution earns its place through smoothing and finite windows.
+
+## Notation and normalization
+
+`x(t)`: continuous; `x[n]`: discrete; `X(ω)`: CTFT, ω in rad/s;
+`X(e^{jω})`: DTFT, ω in rad/sample (explicitly announced at the transition);
+`X[k]`: DFT; `f` in Hz; `ω=2πf` only for continuous time.
+`T`, `ω₀=2π/T`: periodic signal; `T_s=1/f_s`: sample interval;
+`N`: record/DFT length; `Δf=f_s/N`: bin spacing.
+
+CTFT: forward integral unscaled; inverse `1/(2π)`.
+DFT: forward sum unscaled; inverse `1/N`.
+DTFT inverse: `1/(2π)` integral over one frequency period.
+Normalized sinc is `sin(πu)/(πu)`.
+Window definitions are symmetric (`N−1` denominator). PSD is one-sided for real
+data: double interior bins only, divide by `f_s sum(w²)`. No default detrending.
+Welch averages complete, windowed segments. STFT timestamps are window centers;
+spectrogram colors use per-window-energy power, not calibrated EEG units.
+
+## Extending
+
+Add a figure module exporting an initializer; register it in `boot.mjs`, add
+defaults in `data/signal-processing/experiments.mjs`, then compose with
+`{% include interactive-figure.html ... %}`. Give it a stable ID, description,
+caption, labeled controls, and an interpretation. DSP belongs in pure modules.
+`plot` and `spectrogram` accept arbitrary data; they do not synthesize signals.
+Add numerical tests whenever a new algorithm/normalization is introduced.
+
+Add a Markdown article with explicit permalink, series metadata, citation IDs,
+and previous/next URLs; update `_data/navigation.yml` and `index.md`. Planned
+articles have no live links. Keep relative_url in all site-local links.
+
+Local site: `bundle install && bundle exec jekyll serve`. Build:
+`bundle exec jekyll build --strict_front_matter`, followed by
+`node tests/signal-processing/check-site.mjs` for routes, anchors, assets, and
+the module import graph. The CI workflow validates and
+builds only: publishing is intentionally not configured.
+
+## Validation and deliberate simplifications
+
+Initial implementation: 14 numerical tests pass; strict Jekyll build passes.
+Chrome checked all 23 experiments with slider extrema, selector choices, reset,
+and composer add/remove; no runtime errors or page overflow at 390 px. Built
+articles rendered 284 MathJax expressions without TeX errors. TOC/citation
+anchors have no duplicates or missing targets. Desktop/mobile and dark-mode
+screenshots were inspected; Canvas labels draw in CSS pixels and resize with
+the container rather than shrinking text with a fixed-width bitmap.
+
+Limits: complex rotations are manually phase-stepped; butterflies use N=8;
+sinc interpolation is a finite sum; the T-limit uses scaled pulse coefficients;
+spectral replicas are evaluated on a bounded display; PSD is a basic estimator
+without detrending or confidence intervals. Welch/STFT omit incomplete edge
+frames. No static illustrations are needed: figures are generated locally.
+Accessibility provides native labeled controls, line-pattern legends, captions,
+live interpretation, and exact butterfly/convolution tables; Canvas is not a
+complete screen-reader data-table replacement for every plotted point.
+
+Remaining research work is the planned EEG/audio content, not a missing part of
+these two articles. Publication/hosting is intentionally left to the author.

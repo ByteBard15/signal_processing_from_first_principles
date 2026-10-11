@@ -1,0 +1,38 @@
+title: Signal Processing from First Principles
+description: Interactive research articles deriving Fourier and digital spectral analysis.
+url: "https://bytebard15.github.io"
+baseurl: "/signal_processing_from_first_principles"
+repository: ByteBard15/signal_processing_from_first_principles
+author:
+  name: Amadiegwu Ndunuju Emmanuel
+lang: en
+timezone: Africa/Lagos
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+kramdown:
+  input: GFM
+  math_engine: mathjax
+  syntax_highlighter: rouge
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+exclude:
+  - tmp
+  - vendor
+  - tests
+  - docs
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: article
+      toc: true
+  - scope:
+      path: index.md
+    values:
+      layout: home
+      toc: false

@@ -1,0 +1,42 @@
+- id: R1
+  author: NIST Digital Library of Mathematical Functions
+  title: "§1.8 Fourier Series"
+  year: n.d.
+  url: https://dlmf.nist.gov/1.8
+  note: Further rigorous convergence conditions and Gibbs analysis; notation differs.
+- id: R2
+  author: NIST Digital Library of Mathematical Functions
+  title: "§1.14 Integral Transforms"
+  year: n.d.
+  url: https://dlmf.nist.gov/1.14
+  note: Transform definitions and hypotheses; adjust normalization to this article.
+- id: R3
+  author: Derek Rowell, MIT OpenCourseWare
+  title: Sampling and the Discrete Fourier Transform
+  year: 2008
+  url: https://ocw.mit.edu/courses/2-161-signal-processing-continuous-and-discrete-fall-2008/resources/samplingdft/
+  note: Sampling, reconstruction, finite observations, and windows.
+- id: R4
+  author: James W. Cooley and John W. Tukey
+  title: An Algorithm for the Machine Calculation of Complex Fourier Series
+  year: 1965
+  url: https://doi.org/10.1090/S0025-5718-1965-0178586-1
+  note: Mathematics of Computation 19, 297–301.
+- id: R5
+  author: Peter D. Welch
+  title: The use of fast Fourier transform for the estimation of power spectra
+  year: 1967
+  url: https://doi.org/10.1109/TAU.1967.1161901
+  note: IEEE Transactions on Audio and Electroacoustics 15, 70–73.
+- id: R6
+  author: SciPy developers
+  title: scipy.signal.welch
+  year: n.d.
+  url: https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html
+  note: Practical PSD normalization and one-sided scaling reference; no SciPy dependency here.
+- id: R7
+  author: Amadiegwu Ndunuju Emmanuel
+  title: Design and Construction of a Digital Oscilloscope — Research
+  year: n.d.
+  url: https://bytebard15.github.io/design_and_construction_of_digital_oscilloscope/research/
+  note: Context for finite ADC records and instrument interpretation.

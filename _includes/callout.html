@@ -1,0 +1,5 @@
+<aside class="callout callout--{{ include.type | default: 'note' }}">
+  <strong>{{ include.title | default: "Engineering note" }}</strong>
+  <div>{{ include.content | markdownify }}</div>
+</aside>
+

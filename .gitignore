@@ -1,0 +1,6 @@
+tmp
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.bundle/
+vendor/
