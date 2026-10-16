@@ -2,10 +2,11 @@
 
 An interactive Jekyll research publication in the format of the author's
 [digital oscilloscope project](https://github.com/ByteBard15/design_and_construction_of_digital_oscilloscope).
-Two articles connect mathematical derivations to deterministic browser experiments:
+Three published articles connect mathematical derivations to deterministic browser experiments:
 
 - [From Harmonics to Spectra](content/signal-processing/article-01-fourier-series-transform/index.md)
-- [From Samples to Spectra](content/signal-processing/article-02-sampling-dft-fft/index.md)
+- [From Continuous to Discrete](content/signal-processing/article-02-sampling-dft-fft/index.md)
+- [From Samples to Spectra](content/signal-processing/article-03-dft-fft/index.md)
 
 ## Run locally
 
@@ -55,6 +56,6 @@ Synthetic signals are not instrument measurements. Impulse sampling and infinite
 sinc interpolation are ideal models; the interactive sinc sum is finite. The
 Fourier limit uses a unit rectangular pulse with scaled coefficients T C_k.
 Phasors use a phase slider rather than an automatic animation. FFT butterflies
-use eight inputs, and graphs use modest grids. PSD has no implicit detrending;
-Welch/STFT use complete symmetric-Hann windows. Full mathematical assumptions
-are explained alongside the figures.
+use eight inputs, and graphs use modest grids. Power-density estimation and
+time-frequency analysis are reserved for the planned EEG article. Full
+mathematical assumptions are explained alongside the figures.

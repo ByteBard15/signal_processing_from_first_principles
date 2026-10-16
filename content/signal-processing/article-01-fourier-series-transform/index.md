@@ -11,8 +11,8 @@ updated: 2026-10-12
 reading_time: 45
 tags: [Fourier analysis, mathematics, engineering, interactive research]
 interactive: true
-next_page: /articles/samples-to-spectra/
-next_title: From Samples to Spectra
+next_page: /articles/continuous-to-discrete/
+next_title: From Continuous to Discrete
 references: [R1, R2]
 ---
 
@@ -583,7 +583,7 @@ The complementary operation will matter for finite measurements: multiplication 
 
 $$\mathcal F\{xw\}(\omega)=\frac1{2\pi}\int_{-\infty}^{\infty}X(\nu)W(\omega-\nu)\,d\nu.$$
 
-The [short derivation](#why-time-multiplication-spreads-a-spectrum) explains the factor. In Article 2, $w$ will describe the finite interval in which we retain observations; spreading the spectrum will then have an immediate measurement consequence.
+The [short derivation](#why-time-multiplication-spreads-a-spectrum) explains the factor. In Article 3, $w$ will describe the finite interval in which we retain observations; spreading the spectrum will then have an immediate measurement consequence.
 
 ## Properties to carry into a measurement system
 
@@ -722,6 +722,6 @@ We now know why projections extract harmonics, what convergence guarantees, why 
 
 A measurement system gives us something smaller: an ADC's samples, a finite buffer, and a sampling clock. What becomes of the spectrum when time itself becomes discrete? Do frequency coordinates still distinguish different analog sources?
 
-[From Samples to Spectra]({{ '/articles/samples-to-spectra/' | relative_url }}) begins with that loss of information, then follows its consequences through aliasing, the periodic DTFT, the DFT, and practical FFT analysis.
+[From Continuous to Discrete]({{ '/articles/continuous-to-discrete/' | relative_url }}) begins with that loss of information, then follows its consequences through spectral replication, aliasing, reconstruction, and the periodic DTFT.
 
 {% include references.html %}

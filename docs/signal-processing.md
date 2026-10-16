@@ -27,10 +27,13 @@ pulse with growing T/Riemann-sum transform limit → rectangle/Gaussian and shif
 properties → short proof checks → unresolved sampling question.
 
 **Article 2:** impulse-train multiplication/replicas → aliasing/overlap → sinc
-reconstruction → periodic DTFT → unit-circle aside → weighted sums/convolution
-→ frequency multiplication → finite basis/DFT → periodic extension → bin spacing
-→ leakage/windows → even/odd FFT/butterflies → direct comparison → practical
-two-tone analysis → periodogram/Welch → nonstationary STFT.
+reconstruction → the discrete sequence as its own object → periodic DTFT →
+physical versus normalized frequency → unit-circle aside.
+
+**Article 3:** weighted sums/convolution → frequency multiplication → finite
+basis/DFT → periodic extension → bin spacing and duration → leakage/windows →
+even/odd FFT/butterflies → direct comparison → practical two-tone analysis →
+linked continuous-time/DTFT/DFT/FFT/inverse experiment.
 
 No Laplace/Z derivations, general LTI/control chapters, or standalone convolution
 treatment. Convolution earns its place through smoothing and finite windows.
@@ -51,10 +54,9 @@ In Markdown prose, write absolute values with `\lvert`/`\rvert` and a starred
 subscript with `\ast`: bare pipes or asterisks can be parsed as GFM tables or
 emphasis before MathJax sees them. Put long formulas in display blocks so the
 existing equation container can scroll on narrow screens.
-Window definitions are symmetric (`N−1` denominator). PSD is one-sided for real
-data: double interior bins only, divide by `f_s sum(w²)`. No default detrending.
-Welch averages complete, windowed segments. STFT timestamps are window centers;
-spectrogram colors use per-window-energy power, not calibrated EEG units.
+Window definitions are symmetric (`N−1` denominator). Power-density, Welch and
+STFT conventions remain reusable numerical modules for the planned EEG article,
+where their assumptions and physical units will be introduced.
 
 ## Extending
 
@@ -72,8 +74,8 @@ articles have no live links. Keep relative_url in all site-local links.
 Local site: `bundle install && bundle exec jekyll serve`. Build:
 `bundle exec jekyll build --strict_front_matter`, followed by
 `node tests/signal-processing/check-site.mjs` for routes, anchors, assets, and
-the module import graph. The CI workflow validates and
-builds only: publishing is intentionally not configured.
+the module import graph. The Pages workflow validates, builds, uploads and
+deploys after pushes to `main`, once Pages uses GitHub Actions as its source.
 
 ## Validation and deliberate simplifications
 
@@ -94,8 +96,8 @@ Accessibility provides native labeled controls, line-pattern legends, captions,
 live interpretation, and exact butterfly/convolution tables; Canvas is not a
 complete screen-reader data-table replacement for every plotted point.
 
-Remaining research work is the planned EEG/audio content, not a missing part of
-these two articles. Publication/hosting is intentionally left to the author.
+Remaining research work is the planned EEG/audio content. PSD, Welch and STFT
+will be introduced through EEG rather than appended to the foundations.
 
 Article 1's October 12 review revision expands the inner-product definitions,
 completeness/projection reasoning, waveform derivations, and convergence/Gibbs
@@ -103,8 +105,9 @@ analysis. It keeps N as the highest included harmonic index and introduces M
 for the retained odd-term count. The new causal exponential-response experiment
 uses pure functions in `filters/continuous.mjs`; its convolution is checked
 against an analytic pulse response and its transform against quadrature.
-The frequency probe now offers sine and cosine quadratures. There are 24 figures
-across the series. Article 2's source was not changed for this review.
+The frequency probe now offers sine and cosine quadratures. The original large
+digital article was split after the DTFT: Article 2 asks what sampling preserves,
+while Article 3 asks what a finite computer buffer can calculate.
 The revision adds six numerical checks (20 total). Its ten figures and 358
 MathJax expressions were verified in Chrome, including mobile overflow, probe
 quadratures, and response slider extrema/reset. The build checker rejects
