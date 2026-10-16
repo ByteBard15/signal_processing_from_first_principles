@@ -40,9 +40,8 @@ bundle exec jekyll build --strict_front_matter
 node tests/signal-processing/check-site.mjs
 ```
 
-The validation workflow runs these checks for pushes and pull requests. A
-separate Pages workflow repeats the numerical and generated-site checks, builds
-the Jekyll site, and deploys `_site` after a push to `main`. It can also be run
+The Pages workflow runs the numerical and generated-site checks, builds the
+Jekyll site, and deploys `_site` after a push to `main`. It can also be run
 manually from the Actions tab. The expected live URL is
 `https://bytebard15.github.io/signal_processing_from_first_principles/`.
 
