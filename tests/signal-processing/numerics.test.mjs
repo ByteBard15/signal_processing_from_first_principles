@@ -43,6 +43,16 @@ test('DFT Parseval and real conjugate symmetry', () => {
 test('DTFT periodicity holds for arbitrary frequency', () => {
   const x = [1, 0.5, -0.1, 2]; complexNear(dtft(x, 0.71), dtft(x, 0.71 + TAU));
 });
+test('inverse DTFT quadrature recovers a finite three-tone record', () => {
+  const N = 128, M = 512;
+  const x = Array.from({ length: N }, (_, n) => Math.cos(TAU * 5 * n / N + 0.15)
+    + 0.65 * Math.cos(TAU * 12 * n / N - 0.7)
+    + 0.4 * Math.cos(TAU * 23 * n / N + 1.1));
+  const omega = Array.from({ length: M }, (_, m) => -Math.PI + TAU * m / M);
+  const X = omega.map((value) => dtft(x, value));
+  x.forEach((expected, n) => near(X.reduce((sum, value, m) =>
+    sum + value.re * Math.cos(omega[m] * n) - value.im * Math.sin(omega[m] * n), 0) / M, expected, 1e-8));
+});
 test('linear convolution and its DTFT theorem include full tail', () => {
   const x = [1, 2, 3], h = [0.5, 0.5], y = discreteConvolution(x, h);
   assert.deepEqual(y, [0.5, 1.5, 2.5, 1.5]);

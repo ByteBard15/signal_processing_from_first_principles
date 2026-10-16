@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$project_root"
+
+# A repository-local runtime survives reboots, unlike an installation in /tmp.
+if [[ -x "$project_root/tmp/ruby-runtime/bin/bundle" ]]; then
+  export PATH="$project_root/tmp/ruby-runtime/bin:$PATH"
+fi
+
+if ! command -v bundle >/dev/null 2>&1; then
+  echo 'Ruby and Bundler are required. Install them, then run bundle install.' >&2
+  exit 1
+fi
+
+if ! bundle check; then
+  bundle install
+fi
+exec bundle exec jekyll serve --host 127.0.0.1 "$@"

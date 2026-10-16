@@ -1,6 +1,6 @@
 export const defaults = {
   composer: { components: [{ kind: 'cosine', amplitude: 1, frequency: 2, phase: 0 }, { kind: 'cosine', amplitude: 0.5, frequency: 5, phase: 0 }] },
-  probe: { frequency: 3, duration: 1 },
+  probe: { frequency: 3, duration: 1, kind: 'cosine' },
   series: { harmonics: 7, waveform: 'square' },
   gibbs: { harmonics: 25, zoom: 0.15 },
   complex: { angle: 45 },
@@ -8,9 +8,10 @@ export const defaults = {
   limit: { period: 4, envelope: 'show' },
   rectangle: { width: 1, shift: 0 },
   gaussian: { sigma: 0.4, modulation: 0 },
+  response: { responseTime: 0.3, observation: 0.75 },
   sampling: { bandwidth: 5, sampleRate: 30 },
   aliasing: { frequency: 5, sampleRate: 30 },
-  sinc: { frequency: 5, sampleRate: 30, count: 31 },
+  sinc: { frequency: 5, sampleRate: 30, count: 31, selected: 1 },
   dtft: { span: 3 },
   convolution: { length: 5, position: 16 },
   filter: { length: 5 },
@@ -22,4 +23,5 @@ export const defaults = {
   analyzer: { f1: 50, f2: 120, a1: 1, a2: 0.4, sampleRate: 512, count: 512, noise: 0.15, window: 'hann' },
   welch: { length: 128, noise: 0.6, seed: 42 },
   stft: { length: 128, overlap: 0.5 },
+  endToEnd: { f1: 5, a1: 1, f2: 12, a2: 0.65, f3: 23, a3: 0.4, sampleRate: '128', count: '128' },
 };

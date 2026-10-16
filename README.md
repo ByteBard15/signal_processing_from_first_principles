@@ -9,6 +9,17 @@ Two articles connect mathematical derivations to deterministic browser experimen
 
 ## Run locally
 
+On this workstation, start the server with:
+
+```sh
+./scripts/serve
+```
+
+The launcher uses the repository-local Ruby runtime in ignored
+`tmp/ruby-runtime` when present, or your system's Bundler otherwise. The local
+runtime and cached gems survive a system restart; run the command again after
+rebooting. It does not install a system service.
+
 Use Ruby/Bundler with the existing GitHub Pages dependency set:
 
 ```sh
@@ -29,9 +40,11 @@ bundle exec jekyll build --strict_front_matter
 node tests/signal-processing/check-site.mjs
 ```
 
-The CI workflow runs these checks and **does not deploy**. No publication workflow
-is included. URL/baseurl are prepared for the repository's GitHub Pages path,
-not a claim that the site has been published.
+The validation workflow runs these checks for pushes and pull requests. A
+separate Pages workflow repeats the numerical and generated-site checks, builds
+the Jekyll site, and deploys `_site` after a push to `main`. It can also be run
+manually from the Actions tab. The expected live URL is
+`https://bytebard15.github.io/signal_processing_from_first_principles/`.
 
 See [the developer guide](docs/signal-processing.md) for the outlines, notation,
 library/UI separation, normalization, reusable plotting helpers, and how to add

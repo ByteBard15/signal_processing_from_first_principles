@@ -23,7 +23,8 @@ the same algorithms without a bundler. Jekyll copies these as static assets.
 trigonometric series → harmonic reconstruction → pointwise versus energy
 convergence → Gibbs → conjugate rotations/complex series → Parseval → periodic
 pulse with growing T/Riemann-sum transform limit → rectangle/Gaussian and shifts
-→ necessary transform properties → unresolved sampling question.
+→ a brief continuous response/convolution example → necessary transform
+properties → short proof checks → unresolved sampling question.
 
 **Article 2:** impulse-train multiplication/replicas → aliasing/overlap → sinc
 reconstruction → periodic DTFT → unit-circle aside → weighted sums/convolution
@@ -46,6 +47,10 @@ CTFT: forward integral unscaled; inverse `1/(2π)`.
 DFT: forward sum unscaled; inverse `1/N`.
 DTFT inverse: `1/(2π)` integral over one frequency period.
 Normalized sinc is `sin(πu)/(πu)`.
+In Markdown prose, write absolute values with `\lvert`/`\rvert` and a starred
+subscript with `\ast`: bare pipes or asterisks can be parsed as GFM tables or
+emphasis before MathJax sees them. Put long formulas in display blocks so the
+existing equation container can scroll on narrow screens.
 Window definitions are symmetric (`N−1` denominator). PSD is one-sided for real
 data: double interior bins only, divide by `f_s sum(w²)`. No default detrending.
 Welch averages complete, windowed segments. STFT timestamps are window centers;
@@ -91,3 +96,16 @@ complete screen-reader data-table replacement for every plotted point.
 
 Remaining research work is the planned EEG/audio content, not a missing part of
 these two articles. Publication/hosting is intentionally left to the author.
+
+Article 1's October 12 review revision expands the inner-product definitions,
+completeness/projection reasoning, waveform derivations, and convergence/Gibbs
+analysis. It keeps N as the highest included harmonic index and introduces M
+for the retained odd-term count. The new causal exponential-response experiment
+uses pure functions in `filters/continuous.mjs`; its convolution is checked
+against an analytic pulse response and its transform against quadrature.
+The frequency probe now offers sine and cosine quadratures. There are 24 figures
+across the series. Article 2's source was not changed for this review.
+The revision adds six numerical checks (20 total). Its ten figures and 358
+MathJax expressions were verified in Chrome, including mobile overflow, probe
+quadratures, and response slider extrema/reset. The build checker rejects
+unheaded tables in Article 1 to catch accidental GFM parsing of inline math.

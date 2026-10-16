@@ -12,6 +12,13 @@ for (const route of routes) {
   assert.ok(!html.includes('{%') && !html.includes('{{'), `Unexpanded Liquid in ${route}`);
   const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
   assert.equal(ids.length, new Set(ids).size, `Duplicate IDs in ${route}`);
+  // GFM can misread unescaped absolute-value bars in prose as table cells.
+  // Every intended publication table has column headings.
+  if (route.startsWith('/articles/')) {
+    for (const table of html.matchAll(/<table\b[^>]*>[\s\S]*?<\/table>/g)) {
+      assert.ok(table[0].includes('<thead>'), `Unheaded table or misparsed inline math in ${route}`);
+    }
+  }
   figures += [...html.matchAll(/data-experiment="/g)].length;
   for (const match of html.matchAll(/\s(?:href|src)="([^"]+)"/g)) {
     const href = match[1];
@@ -30,7 +37,7 @@ for (const route of routes) {
     }
   }
 }
-assert.equal(figures, 23, 'Expected all 23 independent demonstrations');
+assert.equal(figures, 25, 'Expected all 25 independent demonstrations');
 // Check the complete static ES-module import graph, including boot's lazy imports.
 const visited = new Set();
 async function modules(filename) {

@@ -4,6 +4,7 @@ const registry = {
   complex: ['./fourier/complex.mjs', 'default'], parseval: ['./fourier/parseval.mjs', 'default'],
   limit: ['./fourier/limit.mjs', 'default'], rectangle: ['./fourier/transform-pairs.mjs', 'RectangleTransformExplorer'],
   gaussian: ['./fourier/transform-pairs.mjs', 'GaussianTransformExplorer'],
+  response: ['./fourier/response.mjs', 'default'],
   sampling: ['./digital/sampling.mjs', 'default'], aliasing: ['./digital/aliasing.mjs', 'default'],
   sinc: ['./digital/sinc.mjs', 'default'], dtft: ['./digital/dtft.mjs', 'default'],
   convolution: ['./digital/convolution.mjs', 'default'], filter: ['./digital/filter.mjs', 'default'],
@@ -11,6 +12,7 @@ const registry = {
   leakage: ['./digital/leakage.mjs', 'default'], butterfly: ['./digital/butterfly.mjs', 'default'],
   comparison: ['./digital/comparison.mjs', 'default'], analyzer: ['./digital/analyzer.mjs', 'default'],
   welch: ['./digital/welch.mjs', 'default'], stft: ['./digital/stft.mjs', 'default'],
+  endToEnd: ['./digital/end-to-end.mjs', 'default'],
 };
 async function initialize(root) {
   if (root.dataset.loaded) return; root.dataset.loaded = 'true';
