@@ -4,7 +4,7 @@ subtitle: What a finite digital record can tell us
 slug: samples-to-spectra
 permalink: /articles/samples-to-spectra/
 description: "Deriving the DFT from the DTFT, interpreting finite records and frequency bins, understanding leakage and windows, and computing the same spectrum efficiently with an FFT."
-series: Signal Processing from First Principles
+series: From Frequency-Domain Analysis to Neural Signals and Sound
 article_number: 3
 date: 2026-10-16
 updated: 2026-10-16

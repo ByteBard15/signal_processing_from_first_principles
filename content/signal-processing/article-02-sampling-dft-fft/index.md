@@ -4,7 +4,7 @@ subtitle: What information survives when a signal becomes samples?
 slug: continuous-to-discrete
 permalink: /articles/continuous-to-discrete/
 description: "Deriving what sampling does in time and frequency, why aliasing occurs, when sinc reconstruction works, and why discrete-time spectra repeat."
-series: Signal Processing from First Principles
+series: From Frequency-Domain Analysis to Neural Signals and Sound
 article_number: 2
 date: 2026-10-11
 updated: 2026-10-16

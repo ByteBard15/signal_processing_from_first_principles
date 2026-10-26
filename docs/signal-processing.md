@@ -1,4 +1,4 @@
-# Signal Processing from First Principles
+# From Frequency-Domain Analysis to Neural Signals and Sound
 
 ## Reference and layers
 

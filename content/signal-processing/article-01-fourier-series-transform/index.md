@@ -4,7 +4,7 @@ subtitle: Why oscillations form coordinates for signals
 slug: harmonics-to-spectra
 permalink: /articles/harmonics-to-spectra/
 description: "Recovering frequencies through orthogonality, deriving waveform expansions and their convergence, and following a continuous spectrum through a measurement response."
-series: Signal Processing from First Principles
+series: From Frequency-Domain Analysis to Neural Signals and Sound
 article_number: 1
 date: 2026-10-11
 updated: 2026-10-12

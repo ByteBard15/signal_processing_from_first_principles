@@ -1,11 +1,11 @@
 ---
-title: Signal Processing from First Principles
+title: From Frequency-Domain Analysis to Neural Signals and Sound
 description: A five-part interactive research series about Fourier analysis, sampling, digital spectra, neural signals, and reconstruction.
 ---
 <section class="hero"><div class="hero-inner">
 <p class="eyebrow">Interactive engineering research</p>
-<h1>Signal Processing from First Principles</h1>
-<p class="subtitle">From measuring harmonics to interpreting finite digital records: derivations, reproducible experiments, and the engineering meaning behind each spectrum.</p>
+<h1>From Frequency-Domain Analysis to Neural Signals and Sound</h1>
+<p class="subtitle">From Fourier analysis and finite digital records to applications in neural activity and sound: derivations, reproducible experiments, and the engineering meaning behind each spectrum.</p>
 <div class="hero-actions"><a class="button primary" href="{{ '/articles/harmonics-to-spectra/' | relative_url }}">Start with harmonics</a><a class="button" href="{{ '/articles/continuous-to-discrete/' | relative_url }}">Explore sampling</a></div>
 </div></section>
 <section class="home-section" markdown="1">

@@ -1,4 +1,4 @@
-# Signal Processing from First Principles
+# From Frequency-Domain Analysis to Neural Signals and Sound
 
 An interactive Jekyll research publication in the format of the author's
 [digital oscilloscope project](https://github.com/ByteBard15/design_and_construction_of_digital_oscilloscope).
