@@ -7,8 +7,8 @@ description: "Deriving the DFT from the DTFT, interpreting finite records and fr
 series: From Frequency-Domain Analysis to Neural Signals and Sound
 article_number: 3
 date: 2026-10-16
-updated: 2026-10-16
-reading_time: 36
+updated: 2026-10-27
+reading_time: 39
 tags: [DFT, FFT, spectral leakage, windows, spectral analysis, interactive research]
 interactive: true
 previous_page: /articles/continuous-to-discrete/
@@ -203,6 +203,8 @@ This is also why DFT-domain filtering wraps the convolution tail around the bloc
 
 ## Frequency bins, duration, and resolving two tones
 
+Before converting any index to hertz, separate two ideas that are easy to conflate: **a tone is an oscillation in the measured signal; a frequency bin is one coordinate where the DFT tests that signal**. The source may contain a tone at any frequency. The DFT grid remains fixed by $N$ and $f_s$, so a tone may land on a bin or between two bins; the transform does not create a new bin at the tone's frequency.
+
 The DFT first gives normalized bin angles $\omega_k=2\pi k/N$ rad/sample. A sample clock converts phase per sample into phase per second. Since $\omega=2\pi f/f_s$,
 
 $$
@@ -221,7 +223,7 @@ $$
 \frac{2\pi k}{N}-2\pi=\frac{2\pi(k-N)}{N}.
 $$
 
-The corresponding physical label is $(k-N)f_s/N$. For example, with $N=8$ and $f_s=800$ samples/s, bins $0$ through $4$ represent $0,100,200,300,400$ Hz, while bins $5,6,7$ represent $-300,-200,-100$ Hz. The array order wraps around the frequency circle; it does not continue to new independent positive frequencies.
+The corresponding physical label is $(k-N)f_s/N$. For example, with $N=8$ and $f_s=800$ samples/s, bins $0$ through $4$ represent $0,100,200,300,400$ Hz, while bins $5,6,7$ represent $-300,-200,-100$ Hz. This relabeling does not alter the bin, its value, or its orthogonality. It identifies the shorter signed route around the same periodic frequency circle: positive and negative frequencies are opposite directions of complex phase rotation, not positive and negative sampling times. The array order wraps around the circle; it does not continue to new independent positive frequencies.
 
 For real data, $X[N-k]=X^*[k]$, so the negative-frequency half repeats the positive-frequency magnitude information. A real bin-aligned cosine of amplitude $A$ places $AN/2$ in each of its conjugate bins. A one-sided amplitude plot therefore uses
 
@@ -236,7 +238,7 @@ $$
 
 DC and Nyquist are not doubled because each is its own negative-frequency counterpart. Windowed amplitude spectra replace $N$ with the appropriate coherent-gain normalization described below.
 
-{% include interactive-figure.html id="fig-dft-bins" experiment="bins" title="When does a tone land on a frequency bin?" description="Change sampling rate, sample count, and source frequency; compare the displayed bin coordinate with the magnitude spectrum." caption="The default 50 Hz tone, 512 samples/s, and 128 samples give bin coordinate 12.5. Changing the tone to 48 Hz makes it bin-aligned at k = 12." %}
+{% include interactive-figure.html id="fig-dft-bins" experiment="bins" title="A tone is not a bin" description="Change sampling rate, sample count, and source frequency; compare the tone with its nearest DFT basis, follow signed labels around the frequency circle, and inspect the fixed DFT grid." caption="The default 50 Hz tone has bin coordinate 12.5, so it differs from the nearest basis tone. Change it to 48 Hz to align it at k = 12. The eight-point circle is a compact map of array order: upper indices wrap to clockwise, negative-frequency rotations." %}
 
 Increasing $N$ at fixed $f_s$ means measuring longer, so bin spacing decreases. Increasing $f_s$ at fixed $N$ expands the unaliased bandwidth but shortens observation duration, so spacing increases. These are different resources.
 
@@ -252,7 +254,7 @@ Zero-padding makes that distinction visible. Appending zeros changes the DFT len
 
 $$X(e^{j\omega})=\sum_{n=0}^{N-1}x[n]e^{-j\omega n}.$$
 
-A longer padded DFT samples this same continuous curve more densely. It can smooth a plot and improve interpolation of a peak location, but it cannot narrow the window response or separate components that the measured record did not resolve.
+A longer padded DFT samples this same continuous curve more densely. It can smooth a plot and improve interpolation of a peak location, but it cannot narrow the window response or separate components that the measured record did not resolve. In the window experiment below, increase **zero-padding for displayed DFT**: more markers appear on the unchanged curve while its main-lobe width stays fixed.
 
 ## Leakage: a finite window changes the spectrum
 
@@ -275,7 +277,7 @@ $$w_{Hm}[n]=0.54-0.46\cos\frac{2\pi n}{N-1},\qquad 0\le n<N.$$
 
 Hann reaches zero at both ends; Hamming has endpoints 0.08. Both change the window spectrum, generally reducing near sidelobes relative to a rectangle while broadening the main lobe. Their sidelobe patterns differ; “less leakage” is incomplete unless we specify which frequency offsets matter.
 
-{% include interactive-figure.html id="fig-windowing" experiment="leakage" title="Choose which spectral error matters" description="Compare rectangular, Hann, and Hamming windows; move the tone between bins and change observation length." caption="The window-transform panel exposes main-lobe width and sidelobes directly. The tone plot corrects coherent gain, but cannot remove off-bin peak bias or separate unresolved tones." %}
+{% include interactive-figure.html id="fig-windowing" experiment="leakage" title="Choose which spectral error matters" description="Compare rectangular, Hann, and Hamming windows; move the tone between bins, change observation length, and add zero-padding to distinguish denser evaluation from better resolution." caption="The tone plot overlays the continuous finite-record DTFT with its DFT samples. Padding adds markers but leaves the curve unchanged; window choice changes the main lobe and sidelobes. Coherent-gain correction cannot remove off-bin peak bias or separate unresolved tones." %}
 
 The approximate large-$N$ null-to-null main-lobe widths are two bins for a rectangle and four for Hann/Hamming. Lower sidelobes help reveal a small component near a strong one at sufficiently separated frequencies; a wider main lobe makes close components harder to separate. Increasing the observation duration can improve both absolute lobe width and bin spacing, but changing the taper alone is a trade-off.
 

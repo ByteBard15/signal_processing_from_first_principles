@@ -17,7 +17,7 @@ export const defaults = {
   filter: { length: 5 },
   bins: { frequency: 50, sampleRate: 512, count: 128 },
   periodic: { repeat: 'single' },
-  leakage: { frequency: 50.5, count: 128, window: 'hann' },
+  leakage: { frequency: 50.5, count: 128, window: 'hann', padding: '1' },
   butterfly: { stage: 1 },
   comparison: { count: 32 },
   analyzer: { f1: 50, f2: 120, a1: 1, a2: 0.4, sampleRate: 512, count: 512, noise: 0.15, window: 'hann' },
