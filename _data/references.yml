@@ -40,3 +40,33 @@
   year: n.d.
   url: https://bytebard15.github.io/design_and_construction_of_digital_oscilloscope/research/
   note: Context for finite ADC records and instrument interpretation.
+- id: R8
+  author: Gerwin Schalk
+  title: EEG Motor Movement/Imagery Dataset, version 1.0.0
+  year: 2009
+  url: https://doi.org/10.13026/C28G6P
+  note: PhysioNet dataset documentation, task/run mapping, 64-channel EDF+ recordings, annotations, and license.
+- id: R9
+  author: Gerwin Schalk, Dennis J. McFarland, Thilo Hinterberger, Niels Birbaumer, and Jonathan R. Wolpaw
+  title: "BCI2000: A General-Purpose Brain-Computer Interface (BCI) System"
+  year: 2004
+  url: https://doi.org/10.1109/TBME.2004.827072
+  note: IEEE Transactions on Biomedical Engineering 51(6), 1034–1043; acquisition-system and experimental context.
+- id: R10
+  author: Dennis J. McFarland, Lynn A. Miner, Theresa M. Vaughan, and Jonathan R. Wolpaw
+  title: Mu and beta rhythm topographies during motor imagery and actual movements
+  year: 2000
+  url: https://doi.org/10.1023/A:1023437823106
+  note: Brain Topography 12, 177–186; motivation for sensorimotor mu/beta analysis without implying a universal subject-level effect.
+- id: R11
+  author: Gert Pfurtscheller and Fernando H. Lopes da Silva
+  title: "Event-related EEG/MEG synchronization and desynchronization: basic principles"
+  year: 1999
+  url: https://doi.org/10.1016/S1388-2457(99)00141-8
+  note: Clinical Neurophysiology 110, 1842–1857; definitions and interpretation of event-related power changes.
+- id: R12
+  author: Leon Cohen
+  title: Time-Frequency Analysis
+  year: 1995
+  url: https://doi.org/10.1109/9780470545397
+  note: Windowed time-frequency representations, localization trade-offs, and broader alternatives.

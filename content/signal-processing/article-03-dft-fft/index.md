@@ -13,6 +13,8 @@ tags: [DFT, FFT, spectral leakage, windows, spectral analysis, interactive resea
 interactive: true
 previous_page: /articles/continuous-to-discrete/
 previous_title: From Continuous to Discrete
+next_page: /articles/seeing-neural-activity-through-frequency/
+next_title: Seeing Neural Activity Through Frequency
 references: [R3, R4, R7]
 ---
 

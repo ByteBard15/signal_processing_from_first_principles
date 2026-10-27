@@ -61,17 +61,20 @@ export function spectrumPlot(canvas, spectrum, { label = 'Spectrum', logarithmic
     xDomain: [0, spectrum.frequencies.at(-1)], yDomain: logarithmic ? [-100, 6] : [0, Math.max(0.01, ...values) * 1.1],
     xLabel: 'Frequency (Hz)', yLabel: logarithmic ? 'Magnitude (dB re 1)' : 'Amplitude', ...options });
 }
-export function spectrogram(canvas, result, timeDomain) {
+export function spectrogram(canvas, result, timeDomain, { floor = -70, ceiling = 0, ariaLabel = 'Spectrogram of power spectral density over time.' } = {}) {
   const { frames, sampleRate, length, hop } = result;
   const p = frame(canvas, { xDomain: timeDomain, yDomain: [0, sampleRate / 2], xLabel: 'Window center time (s)', yLabel: 'Frequency (Hz)' });
   const { ctx, x, y } = p;
   ctx.save(); ctx.beginPath(); ctx.rect(p.left, p.top, p.right - p.left, p.bottom - p.top); ctx.clip();
   frames.forEach((f) => f.values.forEach((value, k) => {
-    const db = 10 * Math.log10(Math.max(value, 1e-10)), level = Math.max(0, Math.min(1, (db + 70) / 70));
+    const db = 10 * Math.log10(Math.max(value, 1e-10)), level = Math.max(0, Math.min(1, (db - floor) / (ceiling - floor)));
     ctx.fillStyle = `hsl(${240 - 200 * level} 75% ${12 + 55 * level}%)`;
     const df = sampleRate / length;
     ctx.fillRect(x(f.time - hop / sampleRate / 2), y((k + 0.5) * df), Math.max(1, x(hop / sampleRate) - x(0)), y((k - 0.5) * df) - y((k + 0.5) * df) + 1);
   }));
   ctx.restore();
-  canvas.setAttribute('aria-label', 'Spectrogram: frequency changes from 20 Hz to 60 Hz at two seconds. Power color scale −70 to 0 dB re 1 amplitude²/Hz.');
+  canvas.setAttribute('aria-label', `${ariaLabel} Power colour scale ${floor} to ${ceiling} dB.`);
+  let legend = canvas.nextElementSibling;
+  if (!legend || !legend.classList.contains('plot-legend')) { legend = document.createElement('p'); legend.className = 'plot-legend'; canvas.after(legend); }
+  legend.textContent = `Colour scale: dark blue ${floor} dB to pale amber ${ceiling} dB.`;
 }

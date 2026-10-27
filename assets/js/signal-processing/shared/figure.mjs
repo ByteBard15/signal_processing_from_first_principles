@@ -43,6 +43,14 @@ export function figure(root, key) {
     input.addEventListener('change', () => { state[name] = input.value; redraw(); });
     return input;
   }
+  function checkbox(name, label) {
+    const id = `${root.id}-${name}`, wrapper = element('label', undefined, { for: id, class: 'check-control' });
+    const input = element('input', undefined, { type: 'checkbox', id });
+    const sync = () => { input.checked = Boolean(state[name]); }; inputs.push(sync); sync();
+    wrapper.append(input, element('span', label)); controls.append(wrapper);
+    input.addEventListener('change', () => { state[name] = input.checked; redraw(); });
+    return input;
+  }
   function canvas(label, height = 260) {
     const holder = element('div');
     holder.append(element('p', label, { class: 'sim-title' }));
@@ -55,6 +63,6 @@ export function figure(root, key) {
   });
   const resize = new ResizeObserver(redraw); resize.observe(root);
   root.addEventListener('figure-redraw', redraw);
-  return { get state() { return state; }, controls, plots, observation, slider, select, canvas, redraw,
+  return { get state() { return state; }, controls, plots, observation, slider, select, checkbox, canvas, redraw,
     start(fn, resetExtra = () => {}) { render = fn; onReset = resetExtra; render(); } };
 }

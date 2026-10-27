@@ -14,7 +14,7 @@ description: A five-part interactive research series about Fourier analysis, sam
 1. **[From Harmonics to Spectra]({{ '/articles/harmonics-to-spectra/' | relative_url }})** — Deriving the Fourier series and Fourier transform. Orthogonality, convergence, conjugate rotations, energy, and the limit of an increasingly long period.
 2. **[From Continuous to Discrete]({{ '/articles/continuous-to-discrete/' | relative_url }})** — Sampling, aliasing, reconstruction and the DTFT. What survives when a continuous signal becomes samples?
 3. **[From Samples to Spectra]({{ '/articles/samples-to-spectra/' | relative_url }})** — Finite observations, the DFT, frequency bins, leakage, windows and the FFT.
-4. **Planned: Seeing Neural Activity Through Frequency.** EEG, power spectral density, Welch averaging, STFT and spectrograms.
+4. **[Seeing Neural Activity Through Frequency]({{ '/articles/seeing-neural-activity-through-frequency/' | relative_url }})** — Real EEG, conditioning, power spectral density, Welch averaging, multichannel comparisons, STFT and spectrograms.
 5. **Planned: From Pixels to Sound.** Connecting visual musical information to signal synthesis and reconstruction.
 
 The articles assume calculus, complex numbers, and basic linear algebra. Each experiment runs locally in the browser; noise is seeded so the defaults are reproducible. No measurements or experimental patient data are implied.

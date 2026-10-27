@@ -55,8 +55,8 @@ subscript with `\ast`: bare pipes or asterisks can be parsed as GFM tables or
 emphasis before MathJax sees them. Put long formulas in display blocks so the
 existing equation container can scroll on narrow screens.
 Window definitions are symmetric (`N−1` denominator). Power-density, Welch and
-STFT conventions remain reusable numerical modules for the planned EEG article,
-where their assumptions and physical units will be introduced.
+STFT conventions are reusable numerical modules used by Article IV, where their
+normalization, assumptions, and physical units are introduced.
 
 ## Extending
 
@@ -80,8 +80,10 @@ deploys after pushes to `main`, once Pages uses GitHub Actions as its source.
 ## Validation and deliberate simplifications
 
 Initial implementation: 14 numerical tests pass; strict Jekyll build passes.
-Chrome checked all 23 experiments with slider extrema, selector choices, reset,
-and composer add/remove; no runtime errors or page overflow at 390 px. Built
+Chrome checked the original 23 experiments with slider extrema, selector choices,
+reset, and composer add/remove; no runtime errors or page overflow at 390 px. The
+13 Article IV experiments have numerical, syntax, module-graph, and generated-site
+checks. Built
 articles rendered 284 MathJax expressions without TeX errors. TOC/citation
 anchors have no duplicates or missing targets. Desktop/mobile and dark-mode
 screenshots were inspected; Canvas labels draw in CSS pixels and resize with
@@ -89,15 +91,19 @@ the container rather than shrinking text with a fixed-width bitmap.
 
 Limits: complex rotations are manually phase-stepped; butterflies use N=8;
 sinc interpolation is a finite sum; the T-limit uses scaled pulse coefficients;
-spectral replicas are evaluated on a bounded display; PSD is a basic estimator
-without detrending or confidence intervals. Welch/STFT omit incomplete edge
-frames. No static illustrations are needed: figures are generated locally.
+spectral replicas are evaluated on a bounded display; Article IV uses descriptive
+means and interquartile spread rather than inferential confidence intervals.
+Welch/STFT omit incomplete edge frames. The EEG conditioning example uses
+forward–backward biquads and can retain edge transients. Figures are generated
+locally except for the CSS electrode-orientation diagram.
 Accessibility provides native labeled controls, line-pattern legends, captions,
 live interpretation, and exact butterfly/convolution tables; Canvas is not a
 complete screen-reader data-table replacement for every plotted point.
 
-Remaining research work is the planned EEG/audio content. PSD, Welch and STFT
-will be introduced through EEG rather than appended to the foundations.
+Article IV adds the processed PhysioNet example, EEG conditioning and epoching
+helpers, band-power integration, and 13 EEG experiments. Remaining planned
+series work is the image-to-sound article; multimodal neural measurement is
+identified only as a separate research direction.
 
 Article 1's October 12 review revision expands the inner-product definitions,
 completeness/projection reasoning, waveform derivations, and convergence/Gibbs

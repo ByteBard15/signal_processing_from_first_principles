@@ -2,11 +2,29 @@
 
 An interactive Jekyll research publication in the format of the author's
 [digital oscilloscope project](https://github.com/ByteBard15/design_and_construction_of_digital_oscilloscope).
-Three published articles connect mathematical derivations to deterministic browser experiments:
+Four published articles connect mathematical derivations to deterministic browser experiments:
 
 - [From Harmonics to Spectra](content/signal-processing/article-01-fourier-series-transform/index.md)
 - [From Continuous to Discrete](content/signal-processing/article-02-sampling-dft-fft/index.md)
 - [From Samples to Spectra](content/signal-processing/article-03-dft-fft/index.md)
+- [Seeing Neural Activity Through Frequency](content/signal-processing/article-04-eeg-frequency-analysis/index.md)
+
+## EEG example data
+
+Article IV uses a compact 521 KB derivative of Subject S001, motor-imagery Run
+04 from the [PhysioNet EEG Motor Movement/Imagery Dataset](https://doi.org/10.13026/C28G6P).
+It retains eight channels, official event annotations, and 30 four-second epochs
+at 160 samples/s. The source is distributed under the Open Data Commons
+Attribution License v1.0; attribution and provenance are stored in
+`data/signal-processing/eeg-example.json`.
+
+To reproduce it, download `S001R04.edf` from PhysioNet and run:
+
+```sh
+node scripts/prepare-eeg-example.mjs path/to/S001R04.edf
+```
+
+The full EDF is not committed.
 
 ## Run locally
 
@@ -56,6 +74,7 @@ Synthetic signals are not instrument measurements. Impulse sampling and infinite
 sinc interpolation are ideal models; the interactive sinc sum is finite. The
 Fourier limit uses a unit rectangular pulse with scaled coefficients T C_k.
 Phasors use a phase slider rather than an automatic animation. FFT butterflies
-use eight inputs, and graphs use modest grids. Power-density estimation and
-time-frequency analysis are reserved for the planned EEG article. Full
-mathematical assumptions are explained alongside the figures.
+use eight inputs, and graphs use modest grids. The EEG article uses one
+illustrative subject/run and a reduced channel set; it does not support clinical
+or population claims. Full mathematical assumptions are explained alongside the
+figures.
