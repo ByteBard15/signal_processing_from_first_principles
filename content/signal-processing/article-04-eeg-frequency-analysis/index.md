@@ -223,17 +223,17 @@ $$
 Normalize energy when defining moments. The time centroid and variance are
 
 $$
-\mu_t=\frac{\int t|w(t)|^2dt}{\int|w(t)|^2dt},
+\mu_t=\frac{\int t\lvert w(t)\rvert^2dt}{\int\lvert w(t)\rvert^2dt},
 \qquad
-\sigma_t^2=\frac{\int(t-\mu_t)^2|w(t)|^2dt}{\int|w(t)|^2dt}.
+\sigma_t^2=\frac{\int(t-\mu_t)^2\lvert w(t)\rvert^2dt}{\int\lvert w(t)\rvert^2dt}.
 $$
 
 Using angular frequency $\omega=2\pi f$ and the corresponding transform $W_\omega(\omega)$, define
 
 $$
-\mu_\omega=\frac{\int \omega|W_\omega(\omega)|^2d\omega}{\int|W_\omega(\omega)|^2d\omega},
+\mu_\omega=\frac{\int \omega\lvert W_\omega(\omega)\rvert^2d\omega}{\int\lvert W_\omega(\omega)\rvert^2d\omega},
 \qquad
-\sigma_\omega^2=\frac{\int(\omega-\mu_\omega)^2|W_\omega(\omega)|^2d\omega}{\int|W_\omega(\omega)|^2d\omega}.
+\sigma_\omega^2=\frac{\int(\omega-\mu_\omega)^2\lvert W_\omega(\omega)\rvert^2d\omega}{\int\lvert W_\omega(\omega)\rvert^2d\omega}.
 $$
 
 For functions with finite second moments and sufficient regularity for the Fourier derivative argument,
@@ -248,7 +248,7 @@ $$
 \boxed{\sigma_t\sigma_f\geq\frac1{4\pi}.}
 $$
 
-One route to the inequality is to centre $w$, apply Cauchy–Schwarz to $tw(t)$ and $w'(t)$, integrate $t\,d|w|^2/dt$ by parts, and use Parseval with the differentiation property $\mathcal F\{w'\}=j\omega W_\omega$. The boundary term must vanish and both variances must exist. Cauchy–Schwarz becomes equality only when $w'$ is proportional to $-tw$, whose square-integrable solution is Gaussian. A Gaussian therefore attains the lower bound under these definitions; a Hann window generally does not. [R12](#r12)
+One route to the inequality is to centre $w$, apply Cauchy–Schwarz to $tw(t)$ and $w'(t)$, integrate $t\,d\lvert w\rvert^2/dt$ by parts, and use Parseval with the differentiation property $\mathcal F\{w'\}=j\omega W_\omega$. The boundary term must vanish and both variances must exist. Cauchy–Schwarz becomes equality only when $w'$ is proportional to $-tw$, whose square-integrable solution is Gaussian. A Gaussian therefore attains the lower bound under these definitions; a Hann window generally does not. [R12](#r12)
 
 Four related quantities must remain separate:
 
@@ -289,12 +289,12 @@ Overlap matters for inverse STFT reconstruction because shifted synthesis window
 
 ## From complex coefficients to a spectrogram
 
-$X[m,k]$ is complex. Its magnitude $|X[m,k]|$ measures local coefficient size; its argument records phase relative to the frame's time origin. Common displays are:
+$X[m,k]$ is complex. Its magnitude $\lvert X[m,k]\rvert$ measures local coefficient size; its argument records phase relative to the frame's time origin. Common displays are:
 
 $$
-A[m,k]=|X[m,k]|,
+A[m,k]=\lvert X[m,k]\rvert,
 \qquad
-P[m,k]=|X[m,k]|^2.
+P[m,k]=\lvert X[m,k]\rvert^2.
 $$
 
 The first is a magnitude spectrogram and the second a power spectrogram before any density normalization. For power in decibels,
@@ -309,10 +309,10 @@ A power spectral density estimate for a real, one-sided frame can use
 
 $$
 \widehat S_{xx}[m,k]
-=\frac{c_k|X[m,k]|^2}{f_s\sum_{n=0}^{L-1}w^2[n]},
+=\frac{c_k\lvert X[m,k]\rvert^2}{f_s\sum_{n=0}^{L-1}w^2[n]},
 $$
 
-where $c_k=2$ for interior positive-frequency bins and $c_k=1$ at DC and, for even $N_{\rm FFT}$, Nyquist. Its units are signal-unit squared per hertz. The squared-window normalization is essential when comparing window lengths: raw $|X|^2$ grows with both the amount of data and window weights. Coherent-gain normalization used for sinusoidal amplitude is a different convention and must not be substituted silently.
+where $c_k=2$ for interior positive-frequency bins and $c_k=1$ at DC and, for even $N_{\rm FFT}$, Nyquist. Its units are signal-unit squared per hertz. The squared-window normalization is essential when comparing window lengths: raw $\lvert X\rvert^2$ grows with both the amount of data and window weights. Coherent-gain normalization used for sinusoidal amplitude is a different convention and must not be substituted silently.
 
 A conventional spectrogram puts time horizontally, frequency vertically, and maps magnitude or power to colour. A 3D surface uses points
 
@@ -499,7 +499,7 @@ The stationary tone tests peak-frequency estimation. The two-tone signal tests a
 Define the estimators before looking at results. For the stationary tone, let $\hat f$ be the frequency of the largest one-sided PSD bin in $[20,45]$ Hz, with ties assigned to the lower frequency. Then
 
 $$
-e_f=|\hat f-30\ \text{Hz}|.
+e_f=\lvert\hat f-30\ \text{Hz}\rvert.
 $$
 
 Peak-bin error includes quantization by the DFT grid. A separately reported quadratic interpolation may reduce grid bias, but it must not replace the predeclared primary estimator after results are seen.
@@ -509,15 +509,15 @@ For the two-tone experiment, declare the pair **resolved** only if two local max
 For the burst, first integrate PSD over the fixed 36–44 Hz band for each frame. Estimate onset as the earliest frame centre whose band power exceeds a threshold for two consecutive frames. Fix the threshold from a separate calibration record: the median plus six median absolute deviations of band power from noise-only data generated with the same noise distribution. Do not tune it using the test burst. Define
 
 $$
-e_{t,\rm on}=|\hat t_{\rm on}-3.0\ \text{s}|,
+e_{t,\rm on}=\lvert\hat t_{\rm on}-3.0\ \text{s}\rvert,
 \qquad
-e_{t,\rm off}=|\hat t_{\rm off}-3.5\ \text{s}|,
+e_{t,\rm off}=\lvert\hat t_{\rm off}-3.5\ \text{s}\rvert,
 $$
 
 and
 
 $$
-e_{\rm duration}=| (\hat t_{\rm off}-\hat t_{\rm on})-0.5\ \text{s}|.
+e_{\rm duration}=\lvert(\hat t_{\rm off}-\hat t_{\rm on})-0.5\ \text{s}\rvert.
 $$
 
 Frame-centre threshold crossing is a defined estimator, not the physical instant at which the window first touches the burst. The distinction exposes rather than hides temporal smearing.
@@ -527,7 +527,7 @@ Add zero-mean Gaussian noise at a fixed input SNR defined from clean-signal powe
 $$
 \operatorname{bias}=\frac1R\sum_{r=1}^{R}(\hat\theta_r-\theta),
 \quad
-\operatorname{MAE}=\frac1R\sum_r|\hat\theta_r-\theta|,
+\operatorname{MAE}=\frac1R\sum_r\lvert\hat\theta_r-\theta\rvert,
 $$
 
 $$
