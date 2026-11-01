@@ -70,3 +70,15 @@
   year: 1995
   url: https://doi.org/10.1109/9780470545397
   note: Windowed time-frequency representations, localization trade-offs, and broader alternatives.
+- id: R13
+  author: Matteo Frigo and Steven G. Johnson
+  title: FFTW 3.3.10 Manual
+  year: 2023
+  url: https://www.fftw.org/fftw3_doc/
+  note: Real-to-complex transforms, array layout, plans, allocation, and FFTW's unnormalized DFT convention.
+- id: R14
+  author: SciPy developers
+  title: scipy.signal.windows.hann
+  year: n.d.
+  url: https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.hann.html
+  note: Symmetric and periodic Hann definitions; cited for convention comparison, with no SciPy dependency here.
