@@ -1,0 +1,6 @@
+source_file,channel,units,sample_rate_hz,interval_start_s,interval_end_s,preprocessing,window_samples,window_ms,hop_samples,bin_spacing_hz,frames
+S001R04.edf,C3,uV,160,0,30,mean removal only,20,125,5,8,957
+S001R04.edf,C3,uV,160,0,30,mean removal only,40,250,10,4,477
+S001R04.edf,C3,uV,160,0,30,mean removal only,80,500,20,2,237
+S001R04.edf,C3,uV,160,0,30,mean removal only,160,1000,40,1,117
+S001R04.edf,C3,uV,160,0,30,mean removal only,320,2000,80,0.5,57

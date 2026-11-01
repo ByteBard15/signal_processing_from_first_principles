@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620">
+<rect width="1100" height="620" fill="white"/>
+<style>text{font-family:system-ui,sans-serif;fill:#172033}.axis{stroke:#172033;stroke-width:1.4}.grid{stroke:#ccd3df;stroke-width:1}.label{font-size:15px}.title{font-size:22px;font-weight:650}</style>
+<text class="title" x="550" y="34" text-anchor="middle">Burst-onset localization error at 0 dB SNR</text>
+<line class="grid" x1="90" y1="532" x2="990" y2="532"/>
+<text class="label" x="78" y="537" text-anchor="end">0.00414</text>
+<text class="label" x="90" y="560" text-anchor="middle">125</text>
+<line class="grid" x1="90" y1="438" x2="990" y2="438"/>
+<text class="label" x="78" y="443" text-anchor="end">0.104</text>
+<text class="label" x="270" y="560" text-anchor="middle">500</text>
+<line class="grid" x1="90" y1="344" x2="990" y2="344"/>
+<text class="label" x="78" y="349" text-anchor="end">0.203</text>
+<text class="label" x="450" y="560" text-anchor="middle">875</text>
+<line class="grid" x1="90" y1="250" x2="990" y2="250"/>
+<text class="label" x="78" y="255" text-anchor="end">0.303</text>
+<text class="label" x="630" y="560" text-anchor="middle">1.25e+03</text>
+<line class="grid" x1="90" y1="156" x2="990" y2="156"/>
+<text class="label" x="78" y="161" text-anchor="end">0.402</text>
+<text class="label" x="810" y="560" text-anchor="middle">1.62e+03</text>
+<line class="grid" x1="90" y1="62" x2="990" y2="62"/>
+<text class="label" x="78" y="67" text-anchor="end">0.502</text>
+<text class="label" x="990" y="560" text-anchor="middle">2e+03</text>
+<polyline fill="none" stroke="#1261a0" stroke-width="3" points="90,532 150,531 270,423 510,297 990,62 "/>
+<text class="label" x="1080" y="90" text-anchor="end" fill="#1261a0">threshold estimator</text>
+<line class="axis" x1="90" y1="532" x2="990" y2="532"/>
+<line class="axis" x1="90" y1="62" x2="90" y2="532"/>
+<text class="label" x="540" y="604" text-anchor="middle">Window duration (ms)</text>
+<text class="label" transform="translate(20 298) rotate(-90)" text-anchor="middle">Mean absolute error (s)</text>
+</svg>

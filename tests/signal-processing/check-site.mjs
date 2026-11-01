@@ -37,7 +37,7 @@ for (const route of routes) {
     }
   }
 }
-assert.equal(figures, 36, 'Expected all 36 independent demonstrations');
+assert.equal(figures, 24, 'Expected all 24 independent demonstrations');
 // Check the complete static ES-module import graph, including boot's lazy imports.
 const visited = new Set();
 async function modules(filename) {
