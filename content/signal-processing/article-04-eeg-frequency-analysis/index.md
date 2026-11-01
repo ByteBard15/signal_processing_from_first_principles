@@ -8,7 +8,7 @@ series: From Frequency-Domain Analysis to Neural Signals and Sound
 article_number: 4
 date: 2026-11-01
 updated: 2026-11-01
-reading_time: 48
+reading_time: 58
 tags: [STFT, spectrogram, windows, spectral leakage, time-frequency uncertainty, EEG, C++]
 interactive: true
 previous_page: /articles/samples-to-spectra/
@@ -94,14 +94,60 @@ Let a real sequence be sampled at $f_s$ samples/s. We will use:
 | $N_{\rm FFT}$ | transform length | samples, $N_{\rm FFT}\geq L$ |
 | $k$ | DFT-bin index | $0,1,\ldots,N_{\rm FFT}-1$ |
 
-Frame $m$ starts at sample $mH$. Its STFT is
+Frame $m$ starts at sample $mH$. Before writing its transform, separate the three operations that are easy to compress into one formula. First select $L$ actual measurements:
+
+$$
+x_m[n]=x[mH+n],\qquad 0\leq n<L.
+$$
+
+Then weight those measurements:
+
+$$
+v_m[n]=x_m[n]w[n].
+$$
+
+Finally, if the requested DFT length is larger than the measured frame, define the FFT input
+
+$$
+u_m[n]=
+\begin{cases}
+v_m[n],&0\leq n<L,\\
+0,&L\leq n<N_{\rm FFT}.
+\end{cases}
+$$
+
+Its $N_{\rm FFT}$-point DFT is
+
+$$
+\begin{aligned}
+X[m,k]
+&=\sum_{n=0}^{N_{\rm FFT}-1}u_m[n]e^{-j2\pi kn/N_{\rm FFT}}\\
+&=\sum_{n=0}^{L-1}x[n+mH]w[n]e^{-j2\pi kn/N_{\rm FFT}},
+\end{aligned}
+$$
+
+because every term from $n=L$ onward is multiplied by zero. Thus the commonly quoted STFT expression
 
 $$
 \boxed{X[m,k]=\sum_{n=0}^{L-1}x[n+mH]w[n]
 e^{-j2\pi kn/N_{\rm FFT}}.}
 $$
 
-If $N_{\rm FFT}>L$, the windowed frame is followed by $N_{\rm FFT}-L$ zeros before the DFT. The window length $L$ and FFT size $N_{\rm FFT}$ are therefore different quantities. The frame contains only $L$ measured samples no matter how many zeros are appended.
+is an ordinary DFT of a precisely defined finite vector. $L$ is the number of actual signal samples allowed to influence one frame. $N_{\rm FFT}$ is the number of equally spaced frequency coordinates at which the DFT is evaluated. If $N_{\rm FFT}>L$, the windowed frame is followed by $N_{\rm FFT}-L$ zeros. The frame still contains only $L$ measurements.
+
+For example, let $L=8$ and let the tapered frame be
+
+$$
+v_m=[2,4,1,3,5,2,1,4].
+$$
+
+With $N_{\rm FFT}=8$, those eight values enter an eight-point DFT. With $N_{\rm FFT}=16$, the input is
+
+$$
+[2,4,1,3,5,2,1,4,0,0,0,0,0,0,0,0].
+$$
+
+The second calculation returns sixteen coefficients, but positions 8 through 15 are declared zeros rather than new observations. If $N_{\rm FFT}<L$, a length-$N_{\rm FFT}$ DFT cannot accept all $L$ values without discarding, folding, or otherwise changing them. This article therefore requires $N_{\rm FFT}\geq L$; truncating to $N_{\rm FFT}$ samples would define a shorter effective window.
 
 Under this indexing convention, the frame-start time and a useful frame-centre time are
 
@@ -150,6 +196,69 @@ Suppose $x[n]=\cos(2\pi r n/L)$ and $r$ is not an integer. The rectangular recor
 For example, at $f_s=256$ Hz a 21 Hz sinusoid observed for $L=64$ samples lasts 0.25 s and contains $21(0.25)=5.25$ cycles. The bin spacing is 4 Hz, so the tone lies at bin coordinate $21/4=5.25$, not at an integer bin. Its rectangular-window zeros do not fall on the other DFT bins, and many coefficients are nonzero.
 
 This periodic-extension picture is useful, but it is not a separate leakage mechanism. It describes the same mathematics as convolution with the rectangular-window spectrum.
+
+### Derivation: one tone becomes the window spectrum
+
+The exact finite sum shows why integer-bin alignment is special. Begin with a complex tone
+
+$$
+x[n]=e^{j\omega_0n},\qquad 0\leq n<L,
+$$
+
+and use a rectangular window with an unpadded $L$-point DFT. At bin $k$,
+
+$$
+\begin{aligned}
+X[k]
+&=\sum_{n=0}^{L-1}e^{j\omega_0n}e^{-j2\pi kn/L}\\
+&=\sum_{n=0}^{L-1}e^{j\delta_kn},
+\qquad
+\delta_k=\omega_0-\frac{2\pi k}{L}.
+\end{aligned}
+$$
+
+For $\delta_k$ not an integer multiple of $2\pi$, this is a geometric series:
+
+$$
+X[k]=\frac{1-e^{jL\delta_k}}{1-e^{j\delta_k}}.
+$$
+
+Use $1-e^{j\alpha}=-2je^{j\alpha/2}\sin(\alpha/2)$ in numerator and denominator:
+
+$$
+\boxed{
+X[k]=e^{j(L-1)\delta_k/2}
+\frac{\sin(L\delta_k/2)}{\sin(\delta_k/2)}.}
+$$
+
+Its magnitude is the shifted rectangular-window spectrum,
+
+$$
+\lvert X[k]\rvert=
+\left\lvert\frac{\sin(L\delta_k/2)}{\sin(\delta_k/2)}\right\rvert.
+$$
+
+If $\omega_0=2\pi k_0/L$, then at $k=k_0$ every summand equals one and the limiting value is $X[k_0]=L$. At any other integer bin $k$, $L\delta_k/2=\pi(k_0-k)$ makes the numerator zero while the denominator is nonzero. All other DFT projections cancel exactly.
+
+If $k_0$ is not an integer, the shifted zeros generally fall between the DFT sample locations, so many $X[k]$ values are nonzero. The DFT has not split one physical sinusoid into newly generated tones. It has sampled the finite window's lobe pattern. A real cosine is the sum of positive- and negative-frequency complex tones, so its result is the corresponding pair of shifted window spectra.
+
+The 21 Hz example makes every number visible. With $f_s=256$ Hz and $L=64$,
+
+$$
+T_w=\frac{64}{256}=0.25\ \text{s},
+\qquad
+21T_w=5.25\ \text{cycles},
+$$
+
+and
+
+$$
+\Delta f=\frac{256}{64}=4\ \text{Hz},
+\qquad
+k_0=\frac{21}{4}=5.25.
+$$
+
+The closest basis tones are bin 5 at 20 Hz and bin 6 at 24 Hz. By contrast, a 20 Hz tone completes exactly five cycles and aligns with bin 5 under the same rectangular observation. “Non-integer cycles,” “a discontinuity in the periodic extension,” and “a shifted window spectrum whose zeros miss the DFT bins” are time-domain, periodic, and frequency-domain views of the same finite-record calculation.
 
 ### Rectangular and Hann windows make different compromises
 
@@ -212,6 +321,29 @@ Longer windows do not guarantee lower frequency-estimation error for every signa
 
 If $L=64$ but $N_{\rm FFT}=256$, displayed bins are 1 Hz apart even though the measured duration remains 0.25 s and the Hann response remains that of 64 weights. The padded DFT samples the same finite-frame DTFT at four times as many locations. This can make a lobe smoother and support peak interpolation. It cannot narrow the lobe or separate two components whose windowed responses already merge.
 
+This can be proved directly. The DTFT of one length-$L$ windowed frame is
+
+$$
+V_m(e^{j\omega})=\sum_{n=0}^{L-1}v_m[n]e^{-j\omega n}.
+$$
+
+The zero-padded DFT evaluates this same function at
+
+$$
+\omega_k=\frac{2\pi k}{N_{\rm FFT}}:
+$$
+
+$$
+\begin{aligned}
+U_m[k]
+&=\sum_{n=0}^{N_{\rm FFT}-1}u_m[n]e^{-j2\pi kn/N_{\rm FFT}}\\
+&=\sum_{n=0}^{L-1}v_m[n]e^{-j\omega_kn}\\
+&=V_m(e^{j\omega_k}).
+\end{aligned}
+$$
+
+Changing $N_{\rm FFT}$ changes the set of $\omega_k$ values but not the function being sampled. For the 21 Hz tone above, padding from 64 to 256 points creates a displayed bin exactly at 21 Hz. The surrounding leakage lobe does not disappear: the tone still occupied only 0.25 seconds and still completed 5.25 cycles. Padding merely places a sample at the centre of the already-existing lobe.
+
 ## The time–frequency uncertainty relation
 
 The qualitative trade-off has a precise continuous counterpart. Let $w(t)$ be square-integrable and nonzero, with Fourier transform
@@ -248,7 +380,80 @@ $$
 \boxed{\sigma_t\sigma_f\geq\frac1{4\pi}.}
 $$
 
-One route to the inequality is to centre $w$, apply Cauchy–Schwarz to $tw(t)$ and $w'(t)$, integrate $t\,d\lvert w\rvert^2/dt$ by parts, and use Parseval with the differentiation property $\mathcal F\{w'\}=j\omega W_\omega$. The boundary term must vanish and both variances must exist. Cauchy–Schwarz becomes equality only when $w'$ is proportional to $-tw$, whose square-integrable solution is Gaussian. A Gaussian therefore attains the lower bound under these definitions; a Hann window generally does not. [R12](#r12)
+### Derivation: where the lower bound comes from
+
+Translation and modulation change the centroids but not the spreads, so first centre the window such that $\mu_t=0$ and $\mu_\omega=0$. Write its energy as
+
+$$
+E=\int_{-\infty}^{\infty}\lvert w(t)\rvert^2dt.
+$$
+
+Assume $tw(t)$ and $w'(t)$ are square-integrable and that $t\lvert w(t)\rvert^2$ vanishes at infinity. Integration by parts gives
+
+$$
+\begin{aligned}
+E
+&=\int \lvert w(t)\rvert^2dt\\
+&=-\int t\frac{d}{dt}\lvert w(t)\rvert^2dt\\
+&=-2\operatorname{Re}\int t\,w'(t)w^*(t)\,dt.
+\end{aligned}
+$$
+
+The first equality after the sign follows because
+
+$$
+\int \frac{d}{dt}\left(t\lvert w(t)\rvert^2\right)dt=0
+$$
+
+under the boundary assumption. Now discard only the phase of the inner product and apply Cauchy–Schwarz:
+
+$$
+\begin{aligned}
+E
+&\leq 2\left\lvert\int tw'(t)w^*(t)\,dt\right\rvert\\
+&\leq 2
+\left(\int t^2\lvert w(t)\rvert^2dt\right)^{1/2}
+\left(\int\lvert w'(t)\rvert^2dt\right)^{1/2}.
+\end{aligned}
+$$
+
+With the angular-frequency transform convention
+
+$$
+W_\omega(\omega)=\int w(t)e^{-j\omega t}dt,
+$$
+
+differentiation gives $\mathcal F\{w'\}=j\omega W_\omega$. Parseval therefore gives
+
+$$
+\frac{\int\lvert w'(t)\rvert^2dt}{E}
+=
+\frac{\int\omega^2\lvert W_\omega(\omega)\rvert^2d\omega}
+{\int\lvert W_\omega(\omega)\rvert^2d\omega}
+=\sigma_\omega^2,
+$$
+
+where the final equality uses $\mu_\omega=0$. Similarly,
+
+$$
+\frac{\int t^2\lvert w(t)\rvert^2dt}{E}=\sigma_t^2.
+$$
+
+Divide the Cauchy–Schwarz result by $E$ to obtain
+
+$$
+1\leq2\sigma_t\sigma_\omega,
+\qquad
+\boxed{\sigma_t\sigma_\omega\geq\frac12}.
+$$
+
+Equality requires equality in Cauchy–Schwarz and in the preceding real-part bound. After centring, that requires $w'(t)=-ctw(t)$ for a positive real constant $c$. Solving the differential equation gives
+
+$$
+w(t)=A e^{-ct^2/2},
+$$
+
+a Gaussian up to translation, modulation, scale, and constant phase. A Gaussian attains the lower bound under these definitions; a Hann window generally does not. [R12](#r12)
 
 Four related quantities must remain separate:
 
@@ -268,6 +473,18 @@ N_{\rm overlap}=L-H,
 \qquad
 \operatorname{Overlap}(\%)=\frac{L-H}{L}\times100.
 $$
+
+For a small indexing example, choose $L=8$ and $H=4$. The first three frames contain
+
+$$
+\begin{aligned}
+m=0 &: \quad x[0],x[1],\ldots,x[7],\\
+m=1 &: \quad x[4],x[5],\ldots,x[11],\\
+m=2 &: \quad x[8],x[9],\ldots,x[15].
+\end{aligned}
+$$
+
+Frame 1 reuses samples 4 through 7 from frame 0, then adds samples 8 through 11. Nothing has been interpolated between samples: overlap means the same measured values participate in more than one local spectrum.
 
 For $L=256$ and $H=64$, adjacent frames share 192 samples, giving 75% overlap. The window lasts $256/f_s$ seconds, while successive frame coordinates are only $64/f_s$ seconds apart. Window duration and frame spacing are different.
 
