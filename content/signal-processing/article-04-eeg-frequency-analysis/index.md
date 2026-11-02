@@ -189,6 +189,29 @@ $$
 
 For an ideal complex sinusoid, $X$ is an impulse at its frequency. Convolution shifts a copy of $W$ to that frequency. A finite observation therefore replaces an ideal line by the window's spectral shape: a central **main lobe** and surrounding **side lobes**. Energy appearing away from the source frequency is **spectral leakage**. It is caused by finite observation and window shape, not by sampling frequencies folding across Nyquist. The latter is aliasing.
 
+For the rectangular window, sum its DTFT directly:
+
+$$
+\begin{aligned}
+W_R(e^{j\omega})
+&=\sum_{n=0}^{L-1}e^{-j\omega n}\\
+&=e^{-j\omega(L-1)/2}
+\frac{\sin(L\omega/2)}{\sin(\omega/2)}.
+\end{aligned}
+$$
+
+At $\omega=0$, the limiting magnitude is $L$. The nearest zeros occur at $\omega=\pm2\pi/L$. The region between those zeros is the **main lobe**: the largest concentration around the frequency being measured. The smaller peaks outside those zeros are **side lobes**. They are why a strong component can contribute nonzero values far from its own frequency.
+
+Convolution does not create new physical oscillators in the source. If a complex tone has an ideal spectral impulse at $\omega_0$, then
+
+$$
+\delta(\omega-\omega_0)*W_R(\omega)=W_R(\omega-\omega_0).
+$$
+
+The window spectrum is shifted so that its main lobe is centred at $\omega_0$, while its sidelobes extend elsewhere. For a real cosine there are ideal impulses at $+\omega_0$ and $-\omega_0$, so the windowed spectrum contains two shifted copies. “Additional frequencies” in a plotted finite-record spectrum are values of these lobes, not evidence that multiplication caused the physical source to emit extra tones.
+
+{% include interactive-figure.html id="fig-window-convolution" experiment="leakage" title="Multiplication in time becomes spreading in frequency" description="Compare the window shape, the windowed tone, the shifted spectral lobe pattern, and the window transform itself." caption="The fourth panel labels the main lobe and sidelobe pattern through its shape. Changing from rectangular to Hann alters that kernel; the tone spectrum is the corresponding shifted response. Use the tone and window panels together as the time-domain multiplication, and the two spectral panels as its frequency-domain consequence." %}
+
 ### Why an off-bin sinusoid leaks
 
 Suppose $x[n]=\cos(2\pi r n/L)$ and $r$ is not an integer. The rectangular record contains a non-integer number of cycles. The DFT represents the block as one period of a periodic sequence, so it implicitly joins the last sample back to the first. In general, the joined value and slope do not match. A sharp boundary needs many Fourier basis functions, so projections spread across bins.
@@ -260,6 +283,8 @@ $$
 
 The closest basis tones are bin 5 at 20 Hz and bin 6 at 24 Hz. By contrast, a 20 Hz tone completes exactly five cycles and aligns with bin 5 under the same rectangular observation. “Non-integer cycles,” “a discontinuity in the periodic extension,” and “a shifted window spectrum whose zeros miss the DFT bins” are time-domain, periodic, and frequency-domain views of the same finite-record calculation.
 
+{% include interactive-figure.html id="fig-off-bin-leakage" experiment="leakage" title="Move a tone onto and away from a DFT bin" description="Choose a rectangular window and compare a bin-centred tone with one between bins; inspect both the continuous finite-record DTFT and its DFT samples." caption="With 64 samples at 512 samples/s, natural bins are 8 Hz apart. Set the tone to 48 Hz for exact alignment, then move it toward 50 Hz. The continuous lobe shifts smoothly; at 48 Hz its zeros land on the other DFT bins, while an off-bin shift gives many nonzero samples." %}
+
 ### Rectangular and Hann windows make different compromises
 
 The symmetric Hann window is
@@ -277,6 +302,32 @@ w_{H,p}[n]=\frac12\left(1-\cos\frac{2\pi n}{L}\right),
 $$
 
 It is the first $L$ samples of an $(L+1)$-sample symmetric Hann after its duplicate zero endpoint is removed, so it joins periodically without repeating that endpoint. FFT libraries and numerical packages differ in defaults; the C++ implementation below deliberately uses the symmetric $L-1$ definition. [R14](#r14)
+
+The Hann transform can be related to the rectangular transform rather than treated as an unrelated curve. Let
+
+$$
+\omega_H=\frac{2\pi}{L-1}.
+$$
+
+Using $\cos\alpha=(e^{j\alpha}+e^{-j\alpha})/2$, write the symmetric Hann as
+
+$$
+w_H[n]=\frac12w_R[n]
+-\frac14e^{j\omega_Hn}w_R[n]
+-\frac14e^{-j\omega_Hn}w_R[n].
+$$
+
+The modulation property then gives
+
+$$
+\boxed{
+W_H(e^{j\omega})=
+\frac12W_R(e^{j\omega})
+-\frac14W_R(e^{j(\omega-\omega_H)})
+-\frac14W_R(e^{j(\omega+\omega_H)}) .}
+$$
+
+Thus the Hann response is a weighted combination of three shifted rectangular-window responses. Near many sidelobe peaks those copies partially cancel, lowering sidelobes. Near the centre they combine into a wider main lobe. Tapering and the spectral trade-off are two descriptions of this same algebra.
 
 Tapering the frame toward zero reduces the abrupt end-to-start mismatch and lowers sidelobes relative to a rectangular window. It does **not** eliminate leakage. The Hann main lobe is also broader: for large $L$, its null-to-null width is approximately four DFT bins, compared with two for the rectangle. A weak tone sufficiently far from a strong tone may be easier to see with Hann's lower sidelobes, while two equal, very close tones may be harder to separate because of its wider main lobes.
 
@@ -343,6 +394,8 @@ U_m[k]
 $$
 
 Changing $N_{\rm FFT}$ changes the set of $\omega_k$ values but not the function being sampled. For the 21 Hz tone above, padding from 64 to 256 points creates a displayed bin exactly at 21 Hz. The surrounding leakage lobe does not disappear: the tone still occupied only 0.25 seconds and still completed 5.25 cycles. Padding merely places a sample at the centre of the already-existing lobe.
+
+{% include interactive-figure.html id="fig-zero-padding-grid" experiment="leakage" title="Zero-padding adds markers, not a narrower response" description="Increase the displayed DFT from N points to 2N, 4N, or 8N while keeping the measured samples and window fixed." caption="The continuous finite-record DTFT curve is unchanged. Padding places more DFT samples on that curve, so its peak and sidelobes look smoother, but their widths do not shrink." %}
 
 ## The time–frequency uncertainty relation
 
@@ -700,6 +753,16 @@ The complete C++20 experiment, EDF+ reader, download script, fixed seeds, CSV da
 
 For synthetic data, use $f_s=256$ Hz, 75% overlap ($H=L/4$), the symmetric Hann window, and $N_{\rm FFT}=L$ for the primary comparison. A secondary zero-padding plot may use a common dense FFT grid, clearly labelled as interpolation. Use the five lengths in the earlier table.
 
+### What enters the experiment?
+
+There are two input sources, and they answer different questions.
+
+The **synthetic source** is generated from equations. Its frequencies, onset, offset, amplitude, and noise distribution are known because the program sets them. It is not intended to imitate every feature of EEG. Its purpose is measurement: if an estimator reports 31 Hz for a programmed 30 Hz tone, the error is knowable.
+
+The **EEG source** is a measured voltage-difference recording. Subject S001 Run 04 asked the participant to imagine opening and closing the left or right fist during annotated task intervals. In this run, `T0` marks rest, `T1` the left-imagery instruction, and `T2` the right-imagery instruction. These codes describe the experimental cue, not a guaranteed mental state and not the onset of a specific cortical rhythm. The first 30 seconds alternate labelled rest and imagery intervals; the practical comparison later applies every window length to the same C3 samples. [R8](#r8)
+
+The notation also separates the source from its analysis. $x(t)$ denotes an ideal continuous-time definition; sampling it at $t=n/f_s$ produces $x[n]$. The STFT turns $x[n]$ into complex coefficients $X[m,k]$. The plotted **PSD** is the normalized squared coefficient described earlier, with units of signal-unit squared per hertz. None of these symbols denotes a new physical signal emitted by the source.
+
 ### Synthetic signals with known answers
 
 Use four deterministic source definitions over an eight-second record:
@@ -708,12 +771,20 @@ $$
 \begin{aligned}
 x_{\rm tone}(t)&=\sin(2\pi 30t),\\
 x_{\rm two}(t)&=\sin(2\pi 30t)+0.8\sin(2\pi 34t),\\
-x_{\rm burst}(t)&=\mathbf 1_{[3.0,,3.5)}(t)\sin(2\pi 40t),\\
+x_{\rm burst}(t)&=\mathbf 1_{[3.0,\,3.5)}(t)\sin(2\pi 40t),\\
 x_{\rm chirp}(t)&=\sin\left(2\pi\left(10t+\frac{50-10}{2\cdot8}t^2\right)\right).
 \end{aligned}
 $$
 
-The stationary tone tests peak-frequency estimation. The two-tone signal tests a fixed 4 Hz separation. The burst supplies exact onset, offset, duration, and carrier frequency. The optional chirp supplies instantaneous frequency $f_i(t)=10+5t$ Hz and tests whether a changing ridge is averaged within long frames.
+The indicator $\mathbf 1_{[3.0,\,3.5)}(t)$ equals one during that half-second interval and zero elsewhere. Therefore the stationary tone tests peak-frequency estimation, the two-tone signal tests a fixed 4 Hz separation, and the burst supplies exact onset, offset, duration, and carrier frequency. The optional chirp supplies instantaneous frequency $f_i(t)=10+5t$ Hz and tests whether a continuously changing ridge is averaged within long frames. Each signal isolates one question; combining all effects in one source would make the cause of an error ambiguous.
+
+For noisy trials, **0 dB input SNR** means
+
+$$
+10\log_{10}\left(\frac{P_{\rm clean}}{P_{\rm noise}}\right)=0,
+$$
+
+so the noise and clean signal have equal whole-record mean-square power. “Paired” trials mean that trial $r$ uses the same random realization for every window length. This removes an avoidable source of between-window variation: one length is not rewarded with an accidentally easier noise draw.
 
 Define the estimators before looking at results. For the stationary tone, let $\hat f$ be the frequency of the largest one-sided PSD bin in $[20,45]$ Hz, with ties assigned to the lower frequency. Then
 
@@ -723,7 +794,11 @@ $$
 
 Peak-bin error includes quantization by the DFT grid. A separately reported quadratic interpolation may reduce grid bias, but it must not replace the predeclared primary estimator after results are seen.
 
+Here **peak-bin estimation** means selecting one of the actual DFT grid frequencies, not searching a continuous frequency axis. **Quadratic interpolation** fits a parabola to the logarithmic PSD at the winning bin and its two neighbours, then estimates a peak between them. It can locate the centre of an already visible lobe more finely than the grid spacing, but it cannot split two lobes that the measured window has merged.
+
 For the two-tone experiment, declare the pair **resolved** only if two local maxima occur in $[26,38]$ Hz, each lies within 2 Hz of a different true tone, and the minimum between them is at least 3 dB below the smaller peak. This is one operational definition, not a universal Rayleigh law. Report resolved/unresolved for noiseless data and the resolution proportion across noisy trials.
+
+The 3 dB valley rule turns “I can see two bumps” into a reproducible decision. A 3 dB power drop means the valley power is at most about half the smaller peak power because $10\log_{10}(1/2)\approx-3.01$ dB. Another rule could produce different resolution percentages, which is why the criterion is stated before the results.
 
 For the burst, first integrate PSD over the fixed 36–44 Hz band for each frame. Estimate onset as the earliest frame centre whose band power exceeds a threshold for two consecutive frames. A per-frame threshold such as the median plus six median absolute deviations produced too many record-level opportunities for a false alarm when short windows created hundreds of frames. The implemented rule therefore calibrates the statistic actually tested: for each window length, generate 1000 independent noise-only eight-second records, retain the maximum of the smaller power in every adjacent-frame pair, and use the empirical 99th percentile of those 1000 maxima. Test trials are separate from calibration. This controls false alarms per record without treating correlated frames as independent. Define
 
