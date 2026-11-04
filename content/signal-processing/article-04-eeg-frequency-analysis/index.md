@@ -8,12 +8,12 @@ series: From Frequency-Domain Analysis to Neural Signals and Sound
 article_number: 4
 date: 2026-11-01
 updated: 2026-11-01
-reading_time: 58
+reading_time: 65
 tags: [STFT, spectrogram, windows, spectral leakage, time-frequency uncertainty, EEG, C++]
 interactive: true
 previous_page: /articles/samples-to-spectra/
 previous_title: From Samples to Spectra
-references: [R3, R8, R12, R13, R14]
+references: [R3, R8, R10, R12, R13, R14]
 ---
 
 ## A spectrum without a clock
@@ -761,7 +761,39 @@ The **synthetic source** is generated from equations. Its frequencies, onset, of
 
 The **EEG source** is a measured voltage-difference recording. Subject S001 Run 04 asked the participant to imagine opening and closing the left or right fist during annotated task intervals. In this run, `T0` marks rest, `T1` the left-imagery instruction, and `T2` the right-imagery instruction. These codes describe the experimental cue, not a guaranteed mental state and not the onset of a specific cortical rhythm. The first 30 seconds alternate labelled rest and imagery intervals; the practical comparison later applies every window length to the same C3 samples. [R8](#r8)
 
+“Voltage difference” is literal: if one input were 12 $\mu$V relative to the instrument's reference and another were 5 $\mu$V under the same convention, their difference would be 7 $\mu$V. The example illustrates subtraction, not an EEG amplitude model. An electrode does not output a thought label, and the event code is stored separately from the voltage samples.
+
+C3 is a standard scalp-electrode position over the left-central sensorimotor region and is a plausible predeclared channel for a hand-imagery demonstration. That anatomical description is not a claim that C3 measures an isolated cortical source: every scalp channel is a referenced voltage affected by distributed fields, montage, noise, and volume conduction. Selecting C3 before inspecting the five spectrograms avoids choosing whichever channel makes the desired trade-off look most dramatic. Sensorimotor rhythm studies motivate the location, while this single recording remains illustrative. [R10](#r10)
+
 The notation also separates the source from its analysis. $x(t)$ denotes an ideal continuous-time definition; sampling it at $t=n/f_s$ produces $x[n]$. The STFT turns $x[n]$ into complex coefficients $X[m,k]$. The plotted **PSD** is the normalized squared coefficient described earlier, with units of signal-unit squared per hertz. None of these symbols denotes a new physical signal emitted by the source.
+
+The “per hertz” is what makes PSD a density. Approximate power in a frequency band is obtained by summing density times bin width:
+
+$$
+P_{[f_a,f_b]}[m]
+\approx
+\sum_{k:f_a\leq f_k\leq f_b}
+\widehat S_{xx}[m,k]\,\Delta f.
+$$
+
+That is why the burst detector integrates 36–44 Hz PSD rather than comparing a single pixel. If the frequency grid changes, the factor $\Delta f$ preserves the interpretation as band power.
+
+### Why fix these analysis variables?
+
+The independent variable is window length. Every other primary setting is chosen once and held constant so a change in the output can be attributed to that length rather than to a second moving target.
+
+| Choice | Why it is used |
+| --- | --- |
+| Eight-second synthetic record | Leaves three seconds before the burst, 4.5 seconds after its onset, and enough data for several two-second frames. |
+| $f_s=256$ Hz | Gives a 128 Hz Nyquist frequency, safely above every synthetic component, and makes all five requested durations exact integer, power-of-two sample counts. |
+| 125, 250, 500, 1000, 2000 ms | Each duration doubles the preceding one, so observation time and unpadded bin spacing change in controlled factors of two. |
+| Symmetric Hann window | Suppresses rectangular-window sidelobes while keeping one fixed, explicitly defined taper for every comparison. |
+| $N_{\rm FFT}=L$ | Prevents zero-padding density from being confused with information gained from a longer measured window. |
+| $H=L/4$ | Gives 75% overlap and a common hop proportion, providing dense frame coordinates without claiming that overlap improves intrinsic resolution. |
+| One-sided PSD | The sources are real, so negative-frequency magnitudes are redundant; energy normalization permits comparisons across window lengths. |
+| 200 paired trials | Provides a distribution of errors while ensuring every length faces the same test realization within each trial. |
+
+The synthetic frequencies are also deliberate rather than arbitrary. They remain far below Nyquist, so aliasing cannot masquerade as a window-length effect. At the same time, their relationship to the five DFT grids makes specific limitations visible.
 
 ### Synthetic signals with known answers
 
@@ -777,6 +809,34 @@ x_{\rm chirp}(t)&=\sin\left(2\pi\left(10t+\frac{50-10}{2\cdot8}t^2\right)\right)
 $$
 
 The indicator $\mathbf 1_{[3.0,\,3.5)}(t)$ equals one during that half-second interval and zero elsewhere. Therefore the stationary tone tests peak-frequency estimation, the two-tone signal tests a fixed 4 Hz separation, and the burst supplies exact onset, offset, duration, and carrier frequency. The optional chirp supplies instantaneous frequency $f_i(t)=10+5t$ Hz and tests whether a continuously changing ridge is averaged within long frames. Each signal isolates one question; combining all effects in one source would make the cause of an error ambiguous.
+
+Why 30 Hz for the stationary tone? The choice deliberately falls halfway between DFT bins for two short conditions but exactly on a bin for the longer conditions. At 250 ms, $L=64$ and
+
+$$
+\Delta f=\frac{256}{64}=4\ \text{Hz},
+\qquad
+\frac{30}{\Delta f}=7.5.
+$$
+
+The neighbouring grid frequencies are 28 and 32 Hz, so a peak-bin estimator must incur at least 2 Hz error even before noise is considered. At 500 ms, $L=128$, $\Delta f=2$ Hz, and 30 Hz is bin 15. The experiment can therefore show the difference between grid quantization and interpolating the centre of a spectral lobe.
+
+The second tone is 34 Hz, giving a known 4 Hz separation and a slightly smaller amplitude of 0.8. Unequal amplitudes make the test more realistic than two identical peaks without turning it into an extreme weak-neighbour problem. For a Hann window, the approximate null-to-null main-lobe width is $4f_s/L$: about 8 Hz at 500 ms and 4 Hz at one second. The selected separation therefore straddles a meaningful change in expected discrimination. This predicts a transition; it does not guarantee the declared peak-and-valley rule will resolve a noisy trial.
+
+The burst carrier is 40 Hz because it lies exactly on every primary DFT grid in the five-length set. Its timing experiment is therefore not confounded by a carrier that moves on and off bins as $L$ changes. A half-second burst contains 20 carrier cycles—enough to define local spectral power—while remaining shorter than the three longest windows. Its onset at 3.0 seconds places it away from record boundaries, and the fixed 36–44 Hz integration band is centred on 40 Hz while excluding the stationary experiment's 30 Hz neighbourhood.
+
+The chirp begins at 10 Hz and increases at 5 Hz/s to 50 Hz after eight seconds. If its phase is
+
+$$
+\phi(t)=2\pi\left(10t+\frac{5}{2}t^2\right),
+$$
+
+then its instantaneous frequency follows from phase rate:
+
+$$
+f_i(t)=\frac{1}{2\pi}\frac{d\phi}{dt}=10+5t.
+$$
+
+It is a diagnostic source for visualizing ridge averaging, not part of the primary Monte Carlo table. Keeping it secondary prevents a continuously changing frequency from altering the narrow frequency- and onset-error questions.
 
 For noisy trials, **0 dB input SNR** means
 
@@ -796,9 +856,23 @@ Peak-bin error includes quantization by the DFT grid. A separately reported quad
 
 Here **peak-bin estimation** means selecting one of the actual DFT grid frequencies, not searching a continuous frequency axis. **Quadratic interpolation** fits a parabola to the logarithmic PSD at the winning bin and its two neighbours, then estimates a peak between them. It can locate the centre of an already visible lobe more finely than the grid spacing, but it cannot split two lobes that the measured window has merged.
 
+The 20–45 Hz search interval is prior knowledge supplied by this controlled experiment. It contains the 30 Hz target and its complete coarse-grid neighbourhood while excluding DC, very-low-frequency noise, and unrelated high-frequency maxima. Without a fixed search interval, “choose the largest peak anywhere” could return a noise fluctuation that is unrelated to the quantity being estimated. In an exploratory measurement where no band is known beforehand, the broader search and its increased false-selection risk would need to be reported.
+
+For a concrete peak-bin example, the 250 ms condition evaluates 28 and 32 Hz on either side of the true 30 Hz tone. If noise makes 32 Hz the larger PSD value, then
+
+$$
+\hat f=32\ \text{Hz},
+\qquad
+e_f=\lvert32-30\rvert=2\ \text{Hz}.
+$$
+
+The **peak frequency** here means the grid coordinate with the greatest normalized local power under this rule. It is an estimator derived from a broadened, noisy window response—not a claim that the physical source changed its programmed frequency to that bin.
+
 For the two-tone experiment, declare the pair **resolved** only if two local maxima occur in $[26,38]$ Hz, each lies within 2 Hz of a different true tone, and the minimum between them is at least 3 dB below the smaller peak. This is one operational definition, not a universal Rayleigh law. Report resolved/unresolved for noiseless data and the resolution proportion across noisy trials.
 
 The 3 dB valley rule turns “I can see two bumps” into a reproducible decision. A 3 dB power drop means the valley power is at most about half the smaller peak power because $10\log_{10}(1/2)\approx-3.01$ dB. Another rule could produce different resolution percentages, which is why the criterion is stated before the results.
+
+The 26–38 Hz search region extends beyond both true tones so the detector can see their neighbouring bins and the valley between them, but it excludes peaks unrelated to the designed pair. Requiring each detected maximum to lie within 2 Hz of a different target prevents two noise peaks elsewhere in the band from being counted as successful resolution.
 
 For the burst, first integrate PSD over the fixed 36–44 Hz band for each frame. Estimate onset as the earliest frame centre whose band power exceeds a threshold for two consecutive frames. A per-frame threshold such as the median plus six median absolute deviations produced too many record-level opportunities for a false alarm when short windows created hundreds of frames. The implemented rule therefore calibrates the statistic actually tested: for each window length, generate 1000 independent noise-only eight-second records, retain the maximum of the smaller power in every adjacent-frame pair, and use the empirical 99th percentile of those 1000 maxima. Test trials are separate from calibration. This controls false alarms per record without treating correlated frames as independent. Define
 
@@ -830,6 +904,8 @@ $$
 
 The random generator, seed list, SNR convention, record endpoints, threshold calibration record, and software revision belong with the results.
 
+The four summary statistics answer different questions. **Bias** retains the sign of $\hat\theta-\theta$, revealing whether an estimator tends to report too early, late, low, or high. **MAE** gives the typical absolute miss in the parameter's physical unit. **RMSE** penalizes occasional large misses more strongly because errors are squared. **Sample standard deviation** describes trial-to-trial variability around the mean error; it is not the same as error relative to truth. Reporting all four prevents a nearly unbiased estimator with large, cancelling positive and negative errors from appearing precise.
+
 ### Measured synthetic results
 
 The experiment used 200 paired Gaussian-noise trials at 0 dB whole-record SNR. Every window length received the same clean signal and noise realization for a given trial. The complete table, including bias and standard deviation for onset, offset, and duration, is [available as CSV]({{ '/experiments/article-04-stft/results/synthetic_summary.csv' | relative_url }}).
@@ -842,9 +918,13 @@ The experiment used 200 paired Gaussian-noise trials at 0 dB whole-record SNR. E
 | 1000 ms | 1 Hz | 0.000 Hz | 0.003 Hz | 200/200 | 0.253 s | 0.751 s |
 | 2000 ms | 0.5 Hz | 0.000 Hz | 0.002 Hz | 200/200 | 0.502 s | 1.513 s |
 
-The zero raw-bin error at 500 ms and longer has a narrow meaning: 30 Hz lies exactly on those DFT grids in this experiment. It does not imply zero error for an arbitrary frequency. Quadratic interpolation reduces the coarse-grid error for short windows but adds no resolving information; the 30 and 34 Hz components remain merged through 500 ms under the predeclared 3 dB-valley rule.
+The first three frequency results follow the grid calculation made before the run. At 125 ms, bins are 8 Hz apart and the nearest grid value is 32 Hz; at 250 ms, 30 Hz is midway between 28 and 32 Hz. Both primary peak-bin conditions therefore report 2 Hz MAE. At 500 ms and longer, 30 Hz lies exactly on the grids. The resulting zero raw-bin error has that narrow meaning; it does not imply zero error for an arbitrary frequency. Quadratic interpolation reduces the coarse-grid error for short windows but adds no resolving information.
 
-The time result moves in the other direction. Onset MAE is below 5 ms for the two shortest windows under this detector, then rises to about half a second for the two-second window. Duration error grows because a long window remains above threshold while it overlaps samples on both sides of the half-second burst. All 200 bursts were detected at every length, so these summaries do not hide missed trials.
+The two-tone result concerns lobe width rather than only grid position. Both 30 and 34 Hz are exact bins in the 500 ms condition, yet the pair remains unresolved in all trials because the Hann responses overlap too strongly under the predeclared 3 dB-valley rule. At one second, the approximate Hann main-lobe width has narrowed to the pair's 4 Hz separation, and all 200 trials satisfy the operational rule. This is why “both frequencies appear on the DFT grid” is insufficient evidence that they are distinguishable.
+
+The time result moves in the other direction. Onset MAE is below 5 ms for the two shortest windows under this detector, then rises to about half a second for the two-second window. The small short-window value is partly a favourable alignment of this fixed 3.0 s onset with the frame-centre grid: for the 125 ms condition, one centre lies at approximately 2.998 s. It must not be read as a universal claim that a 125 ms Hann window localizes arbitrary onsets to four milliseconds. Shifting the event relative to the hop grid would change the quantization component of the error.
+
+Duration error grows because a long window remains above threshold while it overlaps samples on both sides of the half-second burst. At two seconds, the observation window is four times longer than the physical event, so several frame centres can carry burst-band power even though their windows extend far outside $[3.0,3.5)$ s. All 200 bursts were detected at every length, so these summaries do not hide missed trials.
 
 ![Frequency error versus window duration]({{ '/experiments/article-04-stft/results/frequency_error.svg' | relative_url }})
 
@@ -860,11 +940,11 @@ A 3D surface is deliberately omitted from the reproducible core results. It woul
 
 ## EEG as a practical demonstration, not synthetic ground truth
 
-Use a manageable public recording from the PhysioNet EEG Motor Movement/Imagery Dataset (EEGMMIDB), version 1.0.0. The repository's fixture is Subject S001, Run 04: a motor-imagery run supplied as EDF+ with event annotations. The source dataset contains 64 EEG channels in the international 10–10 arrangement, sampled at **160 Hz**, not 256 Hz. [R8](#r8)
+The practical demonstration uses a manageable public recording from the PhysioNet EEG Motor Movement/Imagery Dataset (EEGMMIDB), version 1.0.0. The repository's fixture is Subject S001, Run 04: a motor-imagery run supplied as EDF+ with event annotations. The source dataset contains 64 EEG channels in the international 10–10 arrangement, sampled at **160 Hz**, not 256 Hz. [R8](#r8)
 
 The preparation script `scripts/prepare-eeg-example.mjs` decodes the EDF digital values using each channel's physical minimum, maximum, and digital calibration. It stores eight named channels—Fc3, Fc4, C3, Cz, C4, Cp3, Cp4, and Fp1—in `data/signal-processing/eeg-example.json`. Values are in microvolts according to the EDF physical-dimension field. The fixture retains the source event codes, sampling frequency, channel labels, file identity, and license.
 
-The experiment should use the same S001 Run 04 interval for every window length. Do **not** resample merely to make the synthetic and EEG tables match. At 160 Hz, the nearest exact sample counts for the requested durations are:
+The experiment uses the same S001 Run 04 interval for every window length. It does **not** resample merely to make the synthetic and EEG tables match. At 160 Hz, the requested durations have these exact sample counts:
 
 | Requested duration | Samples | Actual duration | Bin spacing with $N_{\rm FFT}=L$ | 75% overlap hop |
 | --- | ---: | ---: | ---: | ---: |
@@ -874,7 +954,9 @@ The experiment should use the same S001 Run 04 interval for every window length.
 | 1000 ms | 160 | 1000 ms | 1 Hz | 40 samples |
 | 2000 ms | 320 | 2000 ms | 0.5 Hz | 80 samples |
 
-For a transparent first comparison, select one channel such as C3 in advance, subtract only the mean of the displayed interval, and apply no band-pass, notch filter, artifact rejection, normalization, or resampling. Pass the microvolt samples into the same C++ STFT pipeline with the five $L$ values above. Display one-sided PSD in $\mu\text{V}^2/\text{Hz}$ and use the same fixed dB colour limits across window lengths. State that mean removal is preprocessing and retain the unmodified fixture as the source.
+For a transparent comparison, the implementation selects C3 in advance, subtracts only the mean of the displayed interval, and applies no band-pass, notch filter, artifact rejection, normalization, or resampling. It passes the microvolt samples into the same C++ STFT pipeline with the five $L$ values above. Displays use one-sided PSD in $\mu\text{V}^2/\text{Hz}$ and the same fixed dB colour limits across window lengths. Mean removal is explicitly preprocessing; the unmodified EDF remains the source.
+
+Subtracting the sample mean removes the interval's constant component, which would otherwise appear at DC. It does not remove slow drift, mains interference, eye or muscle artifacts, and it is not a substitute for a documented filter. Fixed colour limits are equally important: if each spectrogram automatically stretched its own minimum and maximum to the full palette, weak structure in one panel could look as intense as strong structure in another, defeating a visual comparison of window lengths.
 
 An optional second panel may apply a predeclared 1–45 Hz filter, but it must identify filter type, order, phase treatment, edge handling, and coefficients. It must not be visually compared with the raw panel as though window length were the only changed variable.
 
